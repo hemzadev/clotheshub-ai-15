@@ -1,10 +1,10 @@
-
 import { useEffect, useRef, useState } from "react";
 import { ImagePlus, Heart, Share2, MoreHorizontal } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar } from "./ui/avatar";
 import { Link } from "react-router-dom";
 import { Skeleton } from "./ui/skeleton";
+import { useInView } from "react-intersection-observer";
 
 interface Pin {
   id: number;
@@ -94,69 +94,31 @@ const PinGrid = () => {
   ]);
 
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const pinsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const { ref, inView } = useInView({
+    threshold: 0.1,
+    triggerOnce: true,
+  });
 
   useEffect(() => {
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const pinId = Number(entry.target.getAttribute('data-pin-id'));
-            if (!loadedImages.has(pinId)) {
-              setLoadedImages((prev) => new Set([...prev, pinId]));
-            }
-          }
-        });
-      },
-      {
-        root: null,
-        rootMargin: '50px',
-        threshold: 0.1,
-      }
-    );
-
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    pinsRef.current.forEach((pin) => {
-      if (pin && observerRef.current) {
-        observerRef.current.observe(pin);
-      }
-    });
-
-    // Simulate initial loading delay
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 1500);
+    }, 1000); // Reduced initial loading time
 
-    return () => {
-      clearTimeout(timer);
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
-  }, [pins]);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <div className="container py-6">
-      <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-4 [column-fill:_balance] mx-auto">
-        {pins.map((pin, index) => (
+    <div className="container py-6" ref={ref}>
+      <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 2xl:columns-7 gap-3 [column-fill:_balance] mx-auto">
+        {pins.map((pin) => (
           <div 
             key={pin.id}
-            ref={(el) => (pinsRef.current[index] = el)}
-            data-pin-id={pin.id}
-            className="break-inside-avoid mb-4 group relative rounded-[1.5rem] overflow-hidden bg-card hover:bg-muted/10 transition-colors"
+            className={`break-inside-avoid mb-3 group relative rounded-[1.5rem] overflow-hidden bg-card hover:bg-muted/10 transition-colors ${
+              inView ? 'animate-fadeIn' : ''
+            }`}
             style={{
-              opacity: loadedImages.has(pin.id) || loading ? 1 : 0,
-              transform: `translateY(${loadedImages.has(pin.id) || loading ? '0' : '20px'})`,
-              transition: 'opacity 0.3s ease, transform 0.3s ease',
-            }}
+              '--animation-delay': `${pin.id * 0.1}s`,
+            } as React.CSSProperties}
           >
             <Link to={`/pin/${pin.id}`} className="block">
               <div className="relative overflow-hidden rounded-[1.5rem] p-2">
