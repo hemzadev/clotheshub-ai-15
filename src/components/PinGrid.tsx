@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from "react";
 import { ImagePlus, Heart, Share2, MoreHorizontal } from "lucide-react";
 import { Button } from "./ui/button";
@@ -108,8 +109,8 @@ const PinGrid = () => {
   }, []);
 
   return (
-    <div className="container py-6" ref={ref}>
-      <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 2xl:columns-7 gap-3 [column-fill:_balance] mx-auto">
+    <div className="py-6" ref={ref}>
+      <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 2xl:columns-7 gap-3 [column-fill:_balance] px-3 md:px-0">
         {pins.map((pin) => (
           <div 
             key={pin.id}
