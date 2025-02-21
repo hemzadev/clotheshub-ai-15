@@ -28,13 +28,15 @@ const HeroSection = () => {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fadeIn [--animation-delay:600ms]">
-              <Button 
-                size="lg" 
-                className="bg-primary text-white hover:bg-primary/90 gap-2 h-14 px-8 text-lg font-medium relative overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,71,255,0.4)] hover:-translate-y-0.5"
-              >
-                Explore Now
-                <ArrowRight className="w-5 h-5" />
-              </Button>
+              <a href="/home">
+                <Button 
+                  size="lg" 
+                  className="bg-primary text-white hover:bg-primary/90 gap-2 h-14 px-8 text-lg font-medium relative overflow-hidden transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,71,255,0.4)] hover:-translate-y-0.5"
+                >
+                  Explore Now
+                  <ArrowRight className="w-5 h-5" />
+                </Button>
+              </a>
               <Dialog>
                 <DialogTrigger asChild>
                   <Button 
