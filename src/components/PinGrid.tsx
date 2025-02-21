@@ -158,58 +158,63 @@ const PinGrid = () => {
               transition: 'opacity 0.3s ease, transform 0.3s ease',
             }}
           >
-            <div className="relative overflow-hidden rounded-[1.5rem] p-2">
-              {loading ? (
-                <Skeleton className="w-full aspect-[3/4] rounded-[1.25rem]" />
-              ) : (
-                <>
-                  <div
-                    className="w-full"
-                    style={{
-                      paddingBottom: `${(pin.height / (pin.height > 400 ? 2 : 1))}px`,
-                      position: 'relative'
-                    }}
-                  >
-                    <img 
-                      src={pin.image} 
-                      alt=""
-                      className="absolute inset-0 w-full h-full object-cover rounded-[1.25rem] transition-all duration-300 group-hover:scale-105"
-                      loading="lazy"
-                      onLoad={() => {
-                        if (!loadedImages.has(pin.id)) {
-                          setLoadedImages(prev => new Set([...prev, pin.id]));
-                        }
+            <Link to={`/pin/${pin.id}`} className="block">
+              <div className="relative overflow-hidden rounded-[1.5rem] p-2">
+                {loading ? (
+                  <Skeleton className="w-full aspect-[3/4] rounded-[1.25rem]" />
+                ) : (
+                  <>
+                    <div
+                      className="w-full"
+                      style={{
+                        paddingBottom: `${(pin.height / (pin.height > 400 ? 2 : 1))}px`,
+                        position: 'relative'
                       }}
-                    />
-                  </div>
-                  <div className="absolute inset-2 rounded-[1.25rem] bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    <div className="absolute top-3 right-3 flex gap-2">
-                      <Button 
-                        size="icon" 
-                        variant="secondary" 
-                        className="h-9 w-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm"
-                      >
-                        <Heart className="h-4 w-4" />
-                      </Button>
-                      <Button 
-                        size="icon" 
-                        variant="secondary" 
-                        className="h-9 w-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm"
-                      >
-                        <Share2 className="h-4 w-4" />
-                      </Button>
-                      <Button 
-                        size="icon" 
-                        variant="secondary" 
-                        className="h-9 w-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm"
-                      >
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
+                    >
+                      <img 
+                        src={pin.image} 
+                        alt=""
+                        className="absolute inset-0 w-full h-full object-cover rounded-[1.25rem] transition-all duration-300 group-hover:scale-105"
+                        loading="lazy"
+                        onLoad={() => {
+                          if (!loadedImages.has(pin.id)) {
+                            setLoadedImages(prev => new Set([...prev, pin.id]));
+                          }
+                        }}
+                      />
                     </div>
-                  </div>
-                </>
-              )}
-            </div>
+                    <div className="absolute inset-2 rounded-[1.25rem] bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      <div className="absolute top-3 right-3 flex gap-2">
+                        <Button 
+                          size="icon" 
+                          variant="secondary" 
+                          className="h-9 w-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm"
+                          onClick={(e) => e.preventDefault()}
+                        >
+                          <Heart className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          size="icon" 
+                          variant="secondary" 
+                          className="h-9 w-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm"
+                          onClick={(e) => e.preventDefault()}
+                        >
+                          <Share2 className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          size="icon" 
+                          variant="secondary" 
+                          className="h-9 w-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm"
+                          onClick={(e) => e.preventDefault()}
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </Link>
             <div className="p-4 flex items-center gap-3">
               {loading ? (
                 <>

@@ -13,6 +13,7 @@ import Account from "./pages/Account";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import UserProfile from "./pages/UserProfile";
+import PinDetail from "./pages/PinDetail";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/account" element={<Account />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/user/:username" element={<UserProfile />} />
+          <Route path="/pin/:id" element={<PinDetail />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
