@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ImagePlus, Heart, Share2, MoreHorizontal } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar } from "./ui/avatar";
+import { Link } from "react-router-dom";
 
 interface Pin {
   id: number;
@@ -95,10 +96,17 @@ const PinGrid = () => {
               </div>
             </div>
             <div className="p-4 flex items-center gap-3">
-              <Avatar className="border-2 border-white/10">
-                <img src={pin.user.avatar} alt={pin.user.name} />
-              </Avatar>
-              <span className="text-sm text-white/90 font-medium">{pin.user.name}</span>
+              <Link to={`/user/${pin.user.name.toLowerCase().replace(/\s+/g, '-')}`} className="hover:opacity-80 transition-opacity">
+                <Avatar className="border-2 border-white/10">
+                  <img src={pin.user.avatar} alt={pin.user.name} />
+                </Avatar>
+              </Link>
+              <Link 
+                to={`/user/${pin.user.name.toLowerCase().replace(/\s+/g, '-')}`}
+                className="text-sm text-white/90 font-medium hover:text-white transition-colors"
+              >
+                {pin.user.name}
+              </Link>
             </div>
           </div>
         ))}
@@ -114,3 +122,4 @@ const PinGrid = () => {
 };
 
 export default PinGrid;
+
