@@ -12,6 +12,7 @@ import AIRecommendations from "./pages/AIRecommendations";
 import Account from "./pages/Account";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import UserProfile from "./pages/UserProfile";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/ai-recommendations" element={<AIRecommendations />} />
           <Route path="/account" element={<Account />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/user/:username" element={<UserProfile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
