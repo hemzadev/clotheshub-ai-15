@@ -1,14 +1,15 @@
 
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import HomeNavbar from "@/components/HomeNavbar";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
-import { Heart, Bookmark, Share2, MessageCircle } from "lucide-react";
+import { Heart, Bookmark, Share2, MessageCircle, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const PinDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   
   // Mock data - in a real app, this would come from an API
   const pin = {
@@ -46,17 +47,32 @@ const PinDetail = () => {
       {
         id: 101,
         image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
-        title: "Similar Design 1"
+        title: "Similar Design 1",
+        height: 400,
+        user: {
+          name: "Interior Design",
+          avatar: "https://ui.shadcn.com/avatars/05.png"
+        }
       },
       {
         id: 102,
         image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c",
-        title: "Similar Design 2"
+        title: "Similar Design 2",
+        height: 380,
+        user: {
+          name: "Home Decor",
+          avatar: "https://ui.shadcn.com/avatars/06.png"
+        }
       },
       {
         id: 103,
         image: "https://images.unsplash.com/photo-1600566752355-35792bedcfea",
-        title: "Similar Design 3"
+        title: "Similar Design 3",
+        height: 420,
+        user: {
+          name: "Style Maven",
+          avatar: "https://ui.shadcn.com/avatars/07.png"
+        }
       }
     ]
   };
@@ -65,6 +81,15 @@ const PinDetail = () => {
     <div className="min-h-screen bg-background">
       <HomeNavbar />
       <div className="container max-w-6xl mx-auto pt-24 px-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="mb-6 h-10 w-10 rounded-full"
+          onClick={() => navigate(-1)}
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Left Column - Image */}
           <div>
@@ -140,18 +165,44 @@ const PinDetail = () => {
 
             <div>
               <h3 className="font-medium mb-4">Similar Items</h3>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="columns-2 sm:columns-3 gap-4 [column-fill:_balance]">
                 {pin.similarPins.map(similarPin => (
-                  <Link key={similarPin.id} to={`/pin/${similarPin.id}`}>
-                    <div className="relative aspect-square rounded-xl overflow-hidden group">
-                      <img 
-                        src={similarPin.image} 
-                        alt={similarPin.title}
-                        className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-200"
-                      />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div 
+                    key={similarPin.id}
+                    className="break-inside-avoid mb-4 group relative rounded-[1.5rem] overflow-hidden bg-card hover:bg-muted/10 transition-colors"
+                  >
+                    <Link to={`/pin/${similarPin.id}`} className="block">
+                      <div className="relative overflow-hidden rounded-[1.5rem] p-2">
+                        <div
+                          className="w-full"
+                          style={{
+                            paddingBottom: `${(similarPin.height / (similarPin.height > 400 ? 2 : 1))}px`,
+                            position: 'relative'
+                          }}
+                        >
+                          <img 
+                            src={similarPin.image} 
+                            alt={similarPin.title}
+                            className="absolute inset-0 w-full h-full object-cover rounded-[1.25rem] transition-all duration-300 group-hover:scale-105"
+                          />
+                        </div>
+                        <div className="absolute inset-2 rounded-[1.25rem] bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                      </div>
+                    </Link>
+                    <div className="p-4 flex items-center gap-3">
+                      <Link to={`/user/${similarPin.user.name.toLowerCase().replace(/\s+/g, '-')}`} className="hover:opacity-80 transition-opacity">
+                        <Avatar className="border-2 border-border">
+                          <img src={similarPin.user.avatar} alt={similarPin.user.name} />
+                        </Avatar>
+                      </Link>
+                      <Link 
+                        to={`/user/${similarPin.user.name.toLowerCase().replace(/\s+/g, '-')}`}
+                        className="text-sm text-foreground/90 font-medium hover:text-foreground transition-colors"
+                      >
+                        {similarPin.user.name}
+                      </Link>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             </div>
