@@ -60,42 +60,42 @@ const PinGrid = () => {
         {pins.map((pin) => (
           <div 
             key={pin.id} 
-            className="break-inside-avoid mb-4 group relative rounded-[1.5rem] overflow-hidden"
+            className="break-inside-avoid mb-4 group relative rounded-[1.5rem] overflow-hidden bg-white/5 hover:bg-white/10 transition-colors"
           >
-            <div className="relative overflow-hidden" style={{ height: pin.height }}>
+            <div className="relative overflow-hidden rounded-[1.5rem] p-2">
               <img 
                 src={pin.image} 
                 alt=""
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                className="w-full h-full object-cover rounded-[1.25rem] transition-all duration-300 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="absolute top-2 right-2 flex gap-2">
+              <div className="absolute inset-2 rounded-[1.25rem] bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                <div className="absolute top-3 right-3 flex gap-2">
                   <Button 
                     size="icon" 
                     variant="secondary" 
-                    className="h-8 w-8 rounded-full bg-white/20 hover:bg-white/40"
+                    className="h-9 w-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm"
                   >
                     <Heart className="h-4 w-4" />
                   </Button>
                   <Button 
                     size="icon" 
                     variant="secondary" 
-                    className="h-8 w-8 rounded-full bg-white/20 hover:bg-white/40"
+                    className="h-9 w-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm"
                   >
                     <Share2 className="h-4 w-4" />
                   </Button>
                   <Button 
                     size="icon" 
                     variant="secondary" 
-                    className="h-8 w-8 rounded-full bg-white/20 hover:bg-white/40"
+                    className="h-9 w-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm"
                   >
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
             </div>
-            <div className="p-3 flex items-center gap-2">
-              <Avatar>
+            <div className="p-4 flex items-center gap-3">
+              <Avatar className="border-2 border-white/10">
                 <img src={pin.user.avatar} alt={pin.user.name} />
               </Avatar>
               <span className="text-sm text-white/90 font-medium">{pin.user.name}</span>
