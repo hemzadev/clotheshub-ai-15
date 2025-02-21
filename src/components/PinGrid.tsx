@@ -103,15 +103,34 @@ const PinGrid = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 1000); // Reduced initial loading time
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, []);
 
+  // Create loading skeletons that match the layout
+  const loadingSkeletons = Array.from({ length: 14 }).map((_, index) => (
+    <div 
+      key={`skeleton-${index}`}
+      className="break-inside-avoid mb-3 group relative rounded-[1.5rem] overflow-hidden bg-card"
+    >
+      <div className="relative overflow-hidden rounded-[1.5rem] p-2">
+        <Skeleton className="w-full" style={{ 
+          height: `${Math.floor(Math.random() * (500 - 300) + 300)}px`,
+          borderRadius: '1.25rem'
+        }} />
+      </div>
+      <div className="p-4 flex items-center gap-3">
+        <Skeleton className="h-8 w-8 rounded-full" />
+        <Skeleton className="h-4 w-24" />
+      </div>
+    </div>
+  ));
+
   return (
     <div className="py-6" ref={ref}>
       <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 2xl:columns-7 gap-3 [column-fill:_balance] px-3 md:px-0">
-        {pins.map((pin) => (
+        {loading ? loadingSkeletons : pins.map((pin) => (
           <div 
             key={pin.id}
             className={`break-inside-avoid mb-3 group relative rounded-[1.5rem] overflow-hidden bg-card hover:bg-muted/10 transition-colors ${
@@ -123,82 +142,67 @@ const PinGrid = () => {
           >
             <Link to={`/pin/${pin.id}`} className="block">
               <div className="relative overflow-hidden rounded-[1.5rem] p-2">
-                {loading ? (
-                  <Skeleton className="w-full aspect-[3/4] rounded-[1.25rem]" />
-                ) : (
-                  <>
-                    <div
-                      className="w-full"
-                      style={{
-                        paddingBottom: `${(pin.height / (pin.height > 400 ? 2 : 1))}px`,
-                        position: 'relative'
-                      }}
+                <div
+                  className="w-full"
+                  style={{
+                    paddingBottom: `${(pin.height / (pin.height > 400 ? 2 : 1))}px`,
+                    position: 'relative'
+                  }}
+                >
+                  <img 
+                    src={pin.image} 
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-cover rounded-[1.25rem] transition-all duration-300 group-hover:scale-105"
+                    loading="lazy"
+                    onLoad={() => {
+                      if (!loadedImages.has(pin.id)) {
+                        setLoadedImages(prev => new Set([...prev, pin.id]));
+                      }
+                    }}
+                  />
+                </div>
+                <div className="absolute inset-2 rounded-[1.25rem] bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  <div className="absolute top-3 right-3 flex gap-2">
+                    <Button 
+                      size="icon" 
+                      variant="secondary" 
+                      className="h-9 w-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm"
+                      onClick={(e) => e.preventDefault()}
                     >
-                      <img 
-                        src={pin.image} 
-                        alt=""
-                        className="absolute inset-0 w-full h-full object-cover rounded-[1.25rem] transition-all duration-300 group-hover:scale-105"
-                        loading="lazy"
-                        onLoad={() => {
-                          if (!loadedImages.has(pin.id)) {
-                            setLoadedImages(prev => new Set([...prev, pin.id]));
-                          }
-                        }}
-                      />
-                    </div>
-                    <div className="absolute inset-2 rounded-[1.25rem] bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                      <div className="absolute top-3 right-3 flex gap-2">
-                        <Button 
-                          size="icon" 
-                          variant="secondary" 
-                          className="h-9 w-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          <Heart className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          size="icon" 
-                          variant="secondary" 
-                          className="h-9 w-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          <Share2 className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          size="icon" 
-                          variant="secondary" 
-                          className="h-9 w-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </>
-                )}
+                      <Heart className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      size="icon" 
+                      variant="secondary" 
+                      className="h-9 w-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm"
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      size="icon" 
+                      variant="secondary" 
+                      className="h-9 w-9 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-sm"
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
               </div>
             </Link>
             <div className="p-4 flex items-center gap-3">
-              {loading ? (
-                <>
-                  <Skeleton className="h-8 w-8 rounded-full" />
-                  <Skeleton className="h-4 w-24" />
-                </>
-              ) : (
-                <>
-                  <Link to={`/user/${pin.user.name.toLowerCase().replace(/\s+/g, '-')}`} className="hover:opacity-80 transition-opacity">
-                    <Avatar className="border-2 border-border">
-                      <img src={pin.user.avatar} alt={pin.user.name} />
-                    </Avatar>
-                  </Link>
-                  <Link 
-                    to={`/user/${pin.user.name.toLowerCase().replace(/\s+/g, '-')}`}
-                    className="text-sm text-foreground/90 font-medium hover:text-foreground transition-colors"
-                  >
-                    {pin.user.name}
-                  </Link>
-                </>
-              )}
+              <Link to={`/user/${pin.user.name.toLowerCase().replace(/\s+/g, '-')}`} className="hover:opacity-80 transition-opacity">
+                <Avatar className="border-2 border-border">
+                  <img src={pin.user.avatar} alt={pin.user.name} />
+                </Avatar>
+              </Link>
+              <Link 
+                to={`/user/${pin.user.name.toLowerCase().replace(/\s+/g, '-')}`}
+                className="text-sm text-foreground/90 font-medium hover:text-foreground transition-colors"
+              >
+                {pin.user.name}
+              </Link>
             </div>
           </div>
         ))}
