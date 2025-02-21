@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ImagePlus, Heart, Share2, MoreHorizontal } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar } from "./ui/avatar";
@@ -93,14 +93,10 @@ const PinGrid = () => {
     }
   ]);
 
-  useEffect(() => {
-    // Simulate loading delay with cleanup
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, []);
+  // Simulate loading delay
+  setTimeout(() => {
+    setLoading(false);
+  }, 1500);
 
   return (
     <div className="container py-6">
@@ -108,7 +104,7 @@ const PinGrid = () => {
         {pins.map((pin) => (
           <div 
             key={pin.id} 
-            className="break-inside-avoid mb-4 group relative rounded-[1.5rem] overflow-hidden bg-card hover:bg-accent/5 transition-colors"
+            className="break-inside-avoid mb-4 group relative rounded-[1.5rem] overflow-hidden bg-white/5 hover:bg-white/10 transition-colors"
           >
             <div className="relative overflow-hidden rounded-[1.5rem] p-2">
               {loading ? (
@@ -157,12 +153,12 @@ const PinGrid = () => {
                 <>
                   <Link to={`/user/${pin.user.name.toLowerCase().replace(/\s+/g, '-')}`} className="hover:opacity-80 transition-opacity">
                     <Avatar className="border-2 border-white/10">
-                      <img src={pin.user.avatar} alt={pin.user.name} loading="lazy" />
+                      <img src={pin.user.avatar} alt={pin.user.name} />
                     </Avatar>
                   </Link>
                   <Link 
                     to={`/user/${pin.user.name.toLowerCase().replace(/\s+/g, '-')}`}
-                    className="text-sm text-foreground/90 font-medium hover:text-foreground transition-colors"
+                    className="text-sm text-white/90 font-medium hover:text-white transition-colors"
                   >
                     {pin.user.name}
                   </Link>
