@@ -5,7 +5,7 @@ import { Bell, MessageCircle, Search, User } from "lucide-react";
 
 const HomeNavbar = () => {
   return (
-    <div className="sticky top-0 z-50 w-full border-b border-white/5 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className="fixed top-0 left-0 right-0 z-50 w-full border-b border-white/5 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container h-16 flex items-center gap-4">
         <a href="/" className="shrink-0">
           <img 
