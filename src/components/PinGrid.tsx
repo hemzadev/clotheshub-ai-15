@@ -60,7 +60,7 @@ const PinGrid = () => {
         {pins.map((pin) => (
           <div 
             key={pin.id} 
-            className="break-inside-avoid mb-4 group relative rounded-2xl overflow-hidden"
+            className="break-inside-avoid mb-4 group relative rounded-[1.5rem] overflow-hidden"
           >
             <div className="relative overflow-hidden" style={{ height: pin.height }}>
               <img 
