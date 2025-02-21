@@ -20,39 +20,44 @@ export default {
     },
     extend: {
       colors: {
-        border: "#2f57bd",
-        input: "#2f57bd",
-        ring: "#0047ff",
-        background: "#1c202b",
-        foreground: "#ffffff",
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#0047ff",
-          foreground: "#ffffff",
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "#2f57bd",
-          foreground: "#ffffff",
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
-          foreground: "#ffffff",
+          foreground: "hsl(var(--destructive-foreground))",
         },
         muted: {
-          DEFAULT: "#2f57bd",
-          foreground: "#ffffff",
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "#8babfd",
-          foreground: "#1c202b",
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
         },
         popover: {
-          DEFAULT: "#1c202b",
-          foreground: "#ffffff",
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
         },
         card: {
-          DEFAULT: "#1c202b",
-          foreground: "#ffffff",
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
         },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
         "accordion-down": {
@@ -63,44 +68,10 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        fadeIn: {
-          from: { opacity: "0", transform: "translateY(10px)" },
-          to: { opacity: "1", transform: "translateY(0)" },
-        },
-        slideIn: {
-          from: { transform: "translateX(-100%)" },
-          to: { transform: "translateX(0)" },
-        },
-        glow: {
-          '0%, 100%': { 
-            boxShadow: '0 0 15px #0047ff',
-            transform: 'scale(1)'
-          },
-          '50%': { 
-            boxShadow: '0 0 30px #0047ff',
-            transform: 'scale(1.05)'
-          }
-        },
-        popIn: {
-          '0%': { 
-            opacity: '0',
-            filter: 'blur(10px)',
-            transform: 'scale(0.95)'
-          },
-          '100%': { 
-            opacity: '1',
-            filter: 'blur(0px)',
-            transform: 'scale(1)'
-          }
-        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        fadeIn: "fadeIn 0.5s ease-out forwards",
-        slideIn: "slideIn 0.3s ease-out forwards",
-        glow: "glow 2s ease-in-out infinite",
-        popIn: "popIn 0.25s ease-out forwards"
       },
     },
   },
