@@ -2,12 +2,16 @@
 import { useState } from "react";
 import { ImagePlus, Heart, Share2, MoreHorizontal } from "lucide-react";
 import { Button } from "./ui/button";
+import { Avatar } from "./ui/avatar";
 
 interface Pin {
   id: number;
   image: string;
-  title: string;
-  author: string;
+  height: number;
+  user: {
+    name: string;
+    avatar: string;
+  };
 }
 
 const PinGrid = () => {
@@ -15,26 +19,38 @@ const PinGrid = () => {
     {
       id: 1,
       image: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7",
-      title: "Modern Fashion Trends",
-      author: "Fashion Expert"
+      height: 400,
+      user: {
+        name: "Sarah Wilson",
+        avatar: "https://ui.shadcn.com/avatars/01.png"
+      }
     },
     {
       id: 2,
       image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
-      title: "Creative Workspace",
-      author: "Interior Design"
+      height: 300,
+      user: {
+        name: "John Creative",
+        avatar: "https://ui.shadcn.com/avatars/02.png"
+      }
     },
     {
       id: 3,
       image: "https://images.unsplash.com/photo-1501854140801-50d01698950b",
-      title: "Nature Exploration",
-      author: "Travel Guide"
+      height: 500,
+      user: {
+        name: "Nature Explorer",
+        avatar: "https://ui.shadcn.com/avatars/03.png"
+      }
     },
     {
       id: 4,
       image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901",
-      title: "Pet Photography",
-      author: "Animal Lover"
+      height: 350,
+      user: {
+        name: "Pet Lover",
+        avatar: "https://ui.shadcn.com/avatars/04.png"
+      }
     }
   ]);
 
@@ -44,12 +60,12 @@ const PinGrid = () => {
         {pins.map((pin) => (
           <div 
             key={pin.id} 
-            className="break-inside-avoid mb-4 group relative rounded-xl overflow-hidden"
+            className="break-inside-avoid mb-4 group relative rounded-2xl overflow-hidden"
           >
-            <div className="relative aspect-[2/3] overflow-hidden">
+            <div className="relative overflow-hidden" style={{ height: pin.height }}>
               <img 
                 src={pin.image} 
-                alt={pin.title}
+                alt=""
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -78,9 +94,11 @@ const PinGrid = () => {
                 </div>
               </div>
             </div>
-            <div className="p-3">
-              <h3 className="font-medium text-white truncate">{pin.title}</h3>
-              <p className="text-sm text-white/60">{pin.author}</p>
+            <div className="p-3 flex items-center gap-2">
+              <Avatar>
+                <img src={pin.user.avatar} alt={pin.user.name} />
+              </Avatar>
+              <span className="text-sm text-white/90 font-medium">{pin.user.name}</span>
             </div>
           </div>
         ))}
