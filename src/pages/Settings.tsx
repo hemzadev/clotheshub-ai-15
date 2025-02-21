@@ -1,4 +1,4 @@
-
+import { useEffect } from "react";
 import HomeNavbar from "@/components/HomeNavbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -20,6 +20,23 @@ const SettingsPage = () => {
     { icon: Sparkles, path: "/ai-recommendations", label: "AI" },
     { icon: User, path: "/account", label: "Account" },
   ];
+
+  useEffect(() => {
+    // Check system preference and localStorage on mount
+    const isDark = localStorage.getItem("theme") === "dark" ||
+      (!localStorage.getItem("theme") && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.classList.toggle("dark", isDark);
+  }, []);
+
+  const toggleDarkMode = (enabled: boolean) => {
+    if (enabled) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -70,14 +87,17 @@ const SettingsPage = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="font-medium">Dark Mode</p>
-                        <p className="text-sm text-white/60">Toggle dark mode theme</p>
+                        <p className="text-sm text-muted-foreground">Toggle dark mode theme</p>
                       </div>
-                      <Switch />
+                      <Switch
+                        checked={document.documentElement.classList.contains("dark")}
+                        onCheckedChange={toggleDarkMode}
+                      />
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="font-medium">High Contrast</p>
-                        <p className="text-sm text-white/60">Increase visual contrast</p>
+                        <p className="text-sm text-muted-foreground">Increase visual contrast</p>
                       </div>
                       <Switch />
                     </div>
