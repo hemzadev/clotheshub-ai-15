@@ -8,7 +8,7 @@ const Home = () => {
     <div className="min-h-screen bg-background">
       <HomeNavbar />
       <SidebarProvider>
-        <div className="flex">
+        <div className="flex w-full">
           <Sidebar className="h-[calc(100vh-64px)] w-[240px] shrink-0 border-r border-white/5">
             <div className="space-y-4 py-4">
               <div className="px-3 py-2">
