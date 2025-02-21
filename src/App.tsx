@@ -9,6 +9,8 @@ import Home from "./pages/Home";
 import Create from "./pages/Create";
 import Wardrobes from "./pages/Wardrobes";
 import AIRecommendations from "./pages/AIRecommendations";
+import Account from "./pages/Account";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +27,8 @@ const App = () => (
           <Route path="/create" element={<Create />} />
           <Route path="/wardrobes" element={<Wardrobes />} />
           <Route path="/ai-recommendations" element={<AIRecommendations />} />
+          <Route path="/account" element={<Account />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
