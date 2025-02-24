@@ -49,7 +49,12 @@ const HeroSection = () => {
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md animate-popIn bg-background/95 backdrop-blur-xl border border-white/10">
-                  <AuthModal />
+                  <AuthModal onClose={() => {
+                    const closeButton = document.querySelector('[data-radix-dialog-close]');
+                    if (closeButton instanceof HTMLElement) {
+                      closeButton.click();
+                    }
+                  }} />
                 </DialogContent>
               </Dialog>
             </div>

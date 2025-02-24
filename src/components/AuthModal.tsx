@@ -1,3 +1,4 @@
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,31 +20,16 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
-import { Switch } from "@/components/ui/switch"
-import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/components/ui/use-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { cn } from "@/lib/utils"
 import { Icons } from "@/components/icons"
-import {
-  ChangeEvent,
-  useState,
-  forwardRef,
-  useImperativeHandle,
-  useRef,
-} from "react"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
-import { authService } from "@/services/authService";
-import { RegisterRequest } from "@/types/auth";
-import { userStore } from "@/store/userStore";
+import { authService } from "@/services/authService"
+import { RegisterRequest, LoginRequest } from "@/types/auth"
+import { userStore } from "@/store/userStore"
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -58,10 +44,10 @@ const formSchema = z.object({
 })
 
 interface AuthModalProps {
-  onClose: () => void;
+  onClose?: () => void;
 }
 
-const AuthModal = ({ onClose }: AuthModalProps) => {
+const AuthModal = ({ onClose = () => {} }: AuthModalProps) => {
   const [isLogin, setIsLogin] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
@@ -75,11 +61,7 @@ const AuthModal = ({ onClose }: AuthModalProps) => {
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
-  }
-
-  const handleLogin = async (data: Omit<RegisterRequest, 'username'>) => {
+  const handleLogin = async (data: LoginRequest) => {
     setIsLoading(true);
     try {
       const response = await authService.login(data);
@@ -101,6 +83,7 @@ const AuthModal = ({ onClose }: AuthModalProps) => {
   };
 
   const handleRegister = async (data: RegisterRequest) => {
+    setIsLoading(true);
     try {
       const response = await authService.register(data);
       
@@ -108,8 +91,8 @@ const AuthModal = ({ onClose }: AuthModalProps) => {
       userStore.setUserData({
         username: data.username,
         email: data.email,
-        bio: "New user",  // Default bio
-        profilePicture: `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.username}` // Default avatar
+        bio: "New user",
+        profilePicture: `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.username}`
       });
 
       toast({
@@ -125,11 +108,28 @@ const AuthModal = ({ onClose }: AuthModalProps) => {
         description: "Registration failed. Please try again.",
         variant: "destructive"
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
     authService.initiateGoogleAuth();
+  };
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (isLogin) {
+      await handleLogin({
+        email: values.email,
+        password: values.password
+      });
+    } else {
+      await handleRegister({
+        username: values.username,
+        email: values.email,
+        password: values.password
+      });
+    }
   };
 
   return (
@@ -205,49 +205,45 @@ const AuthModal = ({ onClose }: AuthModalProps) => {
                 </FormItem>
               )}
             />
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  Please wait
+                </>
+              ) : (
+                isLogin ? "Login" : "Register"
+              )}
+            </Button>
           </form>
         </Form>
-        <AlertDialogFooter>
+        <AlertDialogFooter className="flex flex-col gap-4">
           <Button
             type="button"
             variant="secondary"
+            className="w-full"
             onClick={() => setIsLogin(!isLogin)}
           >
             {isLogin
               ? "Don't have an account? Register"
               : "Already have an account? Login"}
           </Button>
-          <Button
-            onClick={() => {
-              if (isLogin) {
-                form.handleSubmit(async (data) => {
-                  await handleLogin(data);
-                })();
-              } else {
-                form.handleSubmit(async (data) => {
-                  await handleRegister(data);
-                })();
-              }
-            }}
-            disabled={isLoading}
+          <Separator />
+          <Button 
+            variant="outline" 
+            className="w-full"
+            onClick={handleGoogleLogin}
           >
-            {isLoading ? (
-              <>
-                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                Please wait
-              </>
-            ) : (
-              isLogin ? "Login" : "Register"
-            )}
+            Continue with Google
           </Button>
         </AlertDialogFooter>
-        <Separator className="my-4" />
-        <Button variant="outline" onClick={handleGoogleLogin}>
-          Continue with Google
-        </Button>
       </AlertDialogContent>
     </AlertDialog>
-  )
-}
+  );
+};
 
 export default AuthModal;
