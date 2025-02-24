@@ -1,9 +1,12 @@
 
-import { Sidebar, SidebarProvider } from "@/components/ui/sidebar";
+import { Sidebar } from "@/components/ui/sidebar";
 import { Home as HomeIcon, PlusCircle, Grid, User, Settings, Sparkles } from "lucide-react";
 import PinGrid from "@/components/PinGrid";
 import HomeNavbar from "@/components/HomeNavbar";
 import { Link, useLocation } from "react-router-dom";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 const Home = () => {
   const location = useLocation();
@@ -19,6 +22,81 @@ const Home = () => {
     { icon: Sparkles, path: "/ai-recommendations", label: "AI" },
     { icon: User, path: "/account", label: "Account" },
   ];
+
+  const { data: allPins, isLoading: loadingAll } = useQuery({
+    queryKey: ['pins'],
+    queryFn: async () => {
+      const response = await axios.post('/graphql', {
+        query: `
+          query {
+            pins {
+              id
+              title
+              description
+              type
+              imageUrl
+              user {
+                id
+                name
+                avatar
+              }
+            }
+          }
+        `
+      });
+      return response.data.data.pins;
+    }
+  });
+
+  const { data: productPins, isLoading: loadingProducts } = useQuery({
+    queryKey: ['pins', 'products'],
+    queryFn: async () => {
+      const response = await axios.post('/graphql', {
+        query: `
+          query {
+            pinsByType(type: "product") {
+              id
+              title
+              description
+              type
+              imageUrl
+              user {
+                id
+                name
+                avatar
+              }
+            }
+          }
+        `
+      });
+      return response.data.data.pinsByType;
+    }
+  });
+
+  const { data: outfitPins, isLoading: loadingOutfits } = useQuery({
+    queryKey: ['pins', 'outfits'],
+    queryFn: async () => {
+      const response = await axios.post('/graphql', {
+        query: `
+          query {
+            pinsByType(type: "outfit") {
+              id
+              title
+              description
+              type
+              imageUrl
+              user {
+                id
+                name
+                avatar
+              }
+            }
+          }
+        `
+      });
+      return response.data.data.pinsByType;
+    }
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -50,8 +128,23 @@ const Home = () => {
             </div>
           </div>
         </div>
-        <main className="flex-1 overflow-auto">
-          <PinGrid />
+        <main className="flex-1 overflow-auto px-6">
+          <Tabs defaultValue="all" className="w-full pt-6">
+            <TabsList className="grid w-full max-w-[400px] grid-cols-3 mb-6">
+              <TabsTrigger value="all">All</TabsTrigger>
+              <TabsTrigger value="products">Products</TabsTrigger>
+              <TabsTrigger value="outfits">Outfits</TabsTrigger>
+            </TabsList>
+            <TabsContent value="all">
+              <PinGrid pins={allPins} loading={loadingAll} />
+            </TabsContent>
+            <TabsContent value="products">
+              <PinGrid pins={productPins} loading={loadingProducts} />
+            </TabsContent>
+            <TabsContent value="outfits">
+              <PinGrid pins={outfitPins} loading={loadingOutfits} />
+            </TabsContent>
+          </Tabs>
         </main>
       </div>
     </div>
