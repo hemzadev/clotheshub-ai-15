@@ -1,12 +1,11 @@
-
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import HomeNavbar from "@/components/HomeNavbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Sparkles, Home as HomeIcon, PlusCircle, Grid, User, Settings, Upload, ExternalLink, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const AIRecommendations = () => {
   const location = useLocation();
@@ -16,29 +15,52 @@ const AIRecommendations = () => {
   const [showRecommendations, setShowRecommendations] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleFile = (file: File) => {
+    if (file.type.startsWith("image/")) {
+      setSelectedFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+        setShowRecommendations(false);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      toast({
+        title: "Error",
+        description: "Please upload an image file",
+        variant: "destructive"
+      });
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.type.startsWith("image/")) {
-        setSelectedFile(file);
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setPreviewUrl(reader.result as string);
-          setShowRecommendations(false); // Reset recommendations when new image is uploaded
-        };
-        reader.readAsDataURL(file);
-      } else {
-        toast({
-          title: "Error",
-          description: "Please upload an image file",
-          variant: "destructive"
-        });
-      }
+      handleFile(file);
     }
   };
 
-  // Demo recommendations based on different detected styles
+  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      handleFile(file);
+    }
+  }, []);
+
   const getRecommendationsForStyle = (style: string) => {
     const recommendationSets = {
       casual: [
@@ -163,7 +185,6 @@ const AIRecommendations = () => {
       ]
     };
 
-    // Randomly select a style if not specified
     const styles = ['casual', 'formal', 'streetwear'];
     const selectedStyle = style || styles[Math.floor(Math.random() * styles.length)];
     return recommendationSets[selectedStyle as keyof typeof recommendationSets];
@@ -181,10 +202,8 @@ const AIRecommendations = () => {
 
     setIsAnalyzing(true);
     
-    // Simulate AI analysis delay
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // Get random recommendations for demo
     const newRecommendations = getRecommendationsForStyle("");
     setRecommendations(newRecommendations);
     setShowRecommendations(true);
@@ -290,11 +309,18 @@ const AIRecommendations = () => {
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    className={`space-y-4 cursor-pointer border-2 border-dashed rounded-lg p-8 transition-colors ${
+                      isDragging ? "border-primary bg-primary/10" : "border-white/10 hover:border-primary/50"
+                    }`}
+                  >
                     <div className="flex flex-col items-center">
                       <Upload className="h-12 w-12 text-white/40 mb-4" />
                       <p className="text-white/60 mb-4">
-                        Upload a fashion image to get started
+                        Drag and drop an image here, or click to select
                       </p>
                       <Input
                         type="file"
@@ -304,7 +330,7 @@ const AIRecommendations = () => {
                         id="file-upload"
                       />
                       <label htmlFor="file-upload">
-                        <Button className="bg-primary hover:bg-primary/90">
+                        <Button className="bg-primary hover:bg-primary/90 cursor-pointer">
                           Choose Image
                         </Button>
                       </label>
