@@ -26,7 +26,7 @@ const Home = () => {
   const { data: allPins, isLoading: loadingAll } = useQuery({
     queryKey: ['pins'],
     queryFn: async () => {
-      const response = await axios.post('/graphql', {
+      const response = await axios.post('http://localhost:8088/graphql', {
         query: `
           query {
             pins {
@@ -51,7 +51,7 @@ const Home = () => {
   const { data: productPins, isLoading: loadingProducts } = useQuery({
     queryKey: ['pins', 'products'],
     queryFn: async () => {
-      const response = await axios.post('/graphql', {
+      const response = await axios.post('http://localhost:8088/graphql', {
         query: `
           query {
             pinsByType(type: "product") {
@@ -76,7 +76,7 @@ const Home = () => {
   const { data: outfitPins, isLoading: loadingOutfits } = useQuery({
     queryKey: ['pins', 'outfits'],
     queryFn: async () => {
-      const response = await axios.post('/graphql', {
+      const response = await axios.post('http://localhost:8088/graphql', {
         query: `
           query {
             pinsByType(type: "outfit") {
