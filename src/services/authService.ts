@@ -63,6 +63,7 @@ export const authService = {
         localStorage.setItem('refreshToken', response.data.refreshToken);
         return response.data;
       } else {
+        console.error('Invalid response structure:', response.data);
         throw new Error('Invalid response from server');
       }
     } catch (error) {
