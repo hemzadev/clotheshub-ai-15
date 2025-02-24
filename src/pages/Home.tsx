@@ -23,78 +23,116 @@ const Home = () => {
     { icon: User, path: "/account", label: "Account" },
   ];
 
-  const { data: allPins, isLoading: loadingAll } = useQuery({
+  const { data: allPins, isLoading: loadingAll, error: errorAll } = useQuery({
     queryKey: ['pins'],
     queryFn: async () => {
-      const response = await axios.post('http://localhost:8088/graphql', {
-        query: `
-          query {
-            pins {
-              id
-              title
-              description
-              type
-              imageUrl
-              user {
+      console.log('Fetching all pins...');
+      try {
+        const response = await axios.post('http://localhost:8088/graphql', {
+          query: `
+            query {
+              pins {
                 id
-                name
-                avatar
+                title
+                description
+                type
+                imageUrl
+                user {
+                  id
+                  name
+                  avatar
+                }
               }
             }
-          }
-        `
-      });
-      return response.data.data.pins;
+          `
+        });
+        console.log('All pins response:', response.data);
+        return response.data.data.pins;
+      } catch (error) {
+        console.error('Error fetching all pins:', error);
+        throw error;
+      }
     }
   });
 
-  const { data: productPins, isLoading: loadingProducts } = useQuery({
+  const { data: productPins, isLoading: loadingProducts, error: errorProducts } = useQuery({
     queryKey: ['pins', 'products'],
     queryFn: async () => {
-      const response = await axios.post('http://localhost:8088/graphql', {
-        query: `
-          query {
-            pinsByType(type: "product") {
-              id
-              title
-              description
-              type
-              imageUrl
-              user {
+      console.log('Fetching product pins...');
+      try {
+        const response = await axios.post('http://localhost:8088/graphql', {
+          query: `
+            query {
+              pinsByType(type: "PRODUCT") {
                 id
-                name
-                avatar
+                title
+                description
+                type
+                imageUrl
+                user {
+                  id
+                  name
+                  avatar
+                }
               }
             }
-          }
-        `
-      });
-      return response.data.data.pinsByType;
+          `
+        });
+        console.log('Product pins response:', response.data);
+        return response.data.data.pinsByType;
+      } catch (error) {
+        console.error('Error fetching product pins:', error);
+        throw error;
+      }
     }
   });
 
-  const { data: outfitPins, isLoading: loadingOutfits } = useQuery({
+  const { data: outfitPins, isLoading: loadingOutfits, error: errorOutfits } = useQuery({
     queryKey: ['pins', 'outfits'],
     queryFn: async () => {
-      const response = await axios.post('http://localhost:8088/graphql', {
-        query: `
-          query {
-            pinsByType(type: "outfit") {
-              id
-              title
-              description
-              type
-              imageUrl
-              user {
+      console.log('Fetching outfit pins...');
+      try {
+        const response = await axios.post('http://localhost:8088/graphql', {
+          query: `
+            query {
+              pinsByType(type: "OUTFIT") {
                 id
-                name
-                avatar
+                title
+                description
+                type
+                imageUrl
+                user {
+                  id
+                  name
+                  avatar
+                }
               }
             }
-          }
-        `
-      });
-      return response.data.data.pinsByType;
+          `
+        });
+        console.log('Outfit pins response:', response.data);
+        return response.data.data.pinsByType;
+      } catch (error) {
+        console.error('Error fetching outfit pins:', error);
+        throw error;
+      }
+    }
+  });
+
+  // Log the current state of all data
+  console.log('Current data state:', {
+    allPins,
+    productPins,
+    outfitPins,
+    loadingStates: {
+      all: loadingAll,
+      products: loadingProducts,
+      outfits: loadingOutfits
+    },
+    errors: {
+      all: errorAll,
+      products: errorProducts,
+      outfits: errorOutfits
     }
   });
 
