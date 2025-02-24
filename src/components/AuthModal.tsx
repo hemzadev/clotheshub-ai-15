@@ -160,8 +160,8 @@ const AuthModal = () => {
           let height = img.height;
           
           // Calculate new dimensions while maintaining aspect ratio
-          // Reduced maximum dimension to 400px
-          const maxDimension = 400;
+          // Drastically reduced maximum dimension to 200px
+          const maxDimension = 200;
           if (width > height && width > maxDimension) {
             height = (height * maxDimension) / width;
             width = maxDimension;
@@ -179,18 +179,24 @@ const AuthModal = () => {
           if (ctx) {
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, width, height);
-            // Use ImageSmoothingQuality for better compression
             ctx.imageSmoothingQuality = 'low';
             ctx.drawImage(img, 0, 0, width, height);
             
-            // Convert to compressed JPEG with lower quality
-            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.5);
+            // Try initial compression
+            let quality = 0.3; // Start with very low quality
+            let dataUrl = canvas.toDataURL('image/jpeg', quality);
             
-            // If still too large, reduce dimensions further
-            if (compressedDataUrl.length > 250) {
-              const scaleFactor = 250 / compressedDataUrl.length;
-              const newWidth = width * Math.sqrt(scaleFactor);
-              const newHeight = height * Math.sqrt(scaleFactor);
+            // If still too large, reduce quality until it fits
+            while (dataUrl.length > 8000 && quality > 0.1) {
+              quality -= 0.05;
+              dataUrl = canvas.toDataURL('image/jpeg', quality);
+            }
+            
+            // If still too large, reduce dimensions
+            if (dataUrl.length > 8000) {
+              const scaleFactor = Math.sqrt(8000 / dataUrl.length);
+              const newWidth = width * scaleFactor;
+              const newHeight = height * scaleFactor;
               
               canvas.width = newWidth;
               canvas.height = newHeight;
@@ -198,11 +204,11 @@ const AuthModal = () => {
               ctx.fillRect(0, 0, newWidth, newHeight);
               ctx.imageSmoothingQuality = 'low';
               ctx.drawImage(img, 0, 0, newWidth, newHeight);
-              const finalDataUrl = canvas.toDataURL('image/jpeg', 0.4);
-              setProfileImage(finalDataUrl);
-            } else {
-              setProfileImage(compressedDataUrl);
+              dataUrl = canvas.toDataURL('image/jpeg', 0.3);
             }
+            
+            console.log('Final image size:', dataUrl.length);
+            setProfileImage(dataUrl);
           }
         };
         img.src = reader.result as string;
