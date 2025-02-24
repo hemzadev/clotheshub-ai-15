@@ -46,8 +46,13 @@ const Home = () => {
             }
           `
         });
-        console.log('All pins response:', response.data);
-        return response.data.data.pins;
+        console.log('All pins raw response:', response);
+        
+        if (response.data.errors) {
+          throw new Error(response.data.errors[0].message);
+        }
+        
+        return response.data.data?.pins || [];
       } catch (error) {
         console.error('Error fetching all pins:', error);
         throw error;
@@ -78,8 +83,13 @@ const Home = () => {
             }
           `
         });
-        console.log('Product pins response:', response.data);
-        return response.data.data.pinsByType;
+        console.log('Product pins raw response:', response);
+        
+        if (response.data.errors) {
+          throw new Error(response.data.errors[0].message);
+        }
+        
+        return response.data.data?.pinsByType || [];
       } catch (error) {
         console.error('Error fetching product pins:', error);
         throw error;
@@ -110,8 +120,13 @@ const Home = () => {
             }
           `
         });
-        console.log('Outfit pins response:', response.data);
-        return response.data.data.pinsByType;
+        console.log('Outfit pins raw response:', response);
+        
+        if (response.data.errors) {
+          throw new Error(response.data.errors[0].message);
+        }
+        
+        return response.data.data?.pinsByType || [];
       } catch (error) {
         console.error('Error fetching outfit pins:', error);
         throw error;
