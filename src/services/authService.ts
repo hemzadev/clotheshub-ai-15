@@ -31,6 +31,9 @@ export const authService = {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('refreshToken', response.data.refreshToken);
     }
+
+    // Log the response for debugging
+    console.log('Registration response:', response.data);
     
     return response.data;
   },

@@ -66,7 +66,9 @@ const AuthModal = () => {
           username: values.username,
         });
         
-        if (response.user?.id) {
+        console.log('Registration response in modal:', response); // Debug log
+        
+        if (response && response.user && response.user.id) {
           setUserId(response.user.id);
           setSignUpStep(2);
           toast({
@@ -74,7 +76,8 @@ const AuthModal = () => {
             description: "Please set up your profile picture.",
           });
         } else {
-          throw new Error("Failed to get user ID");
+          console.error('Invalid response structure:', response); // Debug log
+          throw new Error("Failed to get user ID from response");
         }
       } else {
         await authService.login({
@@ -88,10 +91,11 @@ const AuthModal = () => {
         navigate('/home');
       }
     } catch (error) {
+      console.error('Registration error:', error); // Debug log
       toast({
         variant: "destructive",
         title: "Error",
-        description: error instanceof Error ? error.message : "An error occurred. Please try again.",
+        description: error instanceof Error ? error.message : "An error occurred during registration.",
       });
     }
   };
