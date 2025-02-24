@@ -1,3 +1,4 @@
+
 import axios from 'axios';
 import { RegisterRequest, LoginRequest, AuthResponse, ProfileUpdateRequest, UserDTO } from '@/types/auth';
 
@@ -20,6 +21,36 @@ axiosInstance.interceptors.request.use((config) => {
   }
   return config;
 });
+
+// Add refresh token interceptor
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      const refreshToken = localStorage.getItem('refreshToken');
+      
+      try {
+        const response = await axiosInstance.post<AuthResponse>('/auth/refresh', null, {
+          params: { refreshToken }
+        });
+        
+        if (response.data.token) {
+          localStorage.setItem('token', response.data.token);
+          localStorage.setItem('refreshToken', response.data.refreshToken);
+          originalRequest.headers.Authorization = `Bearer ${response.data.token}`;
+          return axiosInstance(originalRequest);
+        }
+      } catch (refreshError) {
+        // If refresh fails, logout
+        authService.logout();
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 export const authService = {
   async register(data: RegisterRequest): Promise<AuthResponse> {
@@ -116,6 +147,10 @@ export const authService = {
     }
 
     return response.data.data.getUserById;
+  },
+
+  initiateGoogleAuth() {
+    window.location.href = 'http://localhost:8088/oauth2/authorization/google';
   },
 
   logout() {
