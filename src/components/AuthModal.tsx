@@ -151,7 +151,41 @@ const AuthModal = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfileImage(reader.result as string);
+        // Create an image element to get dimensions
+        const img = new Image();
+        img.onload = () => {
+          // Create canvas for resizing
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          
+          // Calculate new dimensions while maintaining aspect ratio
+          const maxDimension = 800;
+          if (width > height && width > maxDimension) {
+            height = (height * maxDimension) / width;
+            width = maxDimension;
+          } else if (height > maxDimension) {
+            width = (width * maxDimension) / height;
+            height = maxDimension;
+          }
+          
+          // Set canvas dimensions
+          canvas.width = width;
+          canvas.height = height;
+          
+          // Draw and compress image
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, width, height);
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Convert to compressed JPEG
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+            setProfileImage(compressedDataUrl);
+          }
+        };
+        img.src = reader.result as string;
       };
       reader.readAsDataURL(file);
     }
