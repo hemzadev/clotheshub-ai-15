@@ -4,53 +4,9 @@ import HomeNavbar from "@/components/HomeNavbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Sparkles, Home as HomeIcon, PlusCircle, Grid, User, Settings, Upload, ExternalLink } from "lucide-react";
+import { Sparkles, Home as HomeIcon, PlusCircle, Grid, User, Settings, Upload, ExternalLink, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-
-// Demo recommendation data
-const demoRecommendations = [
-  {
-    id: 1,
-    category: "Similar Style Products",
-    items: [
-      {
-        name: "Classic Denim Jacket",
-        price: "$89.99",
-        image: "https://i.ibb.co/LdYxcj50/truck-jacket.jpg",
-        link: "https://www.zara.com/",
-        store: "Zara"
-      },
-      {
-        name: "Urban Streetwear Hoodie",
-        price: "$59.99",
-        image: "https://i.ibb.co/JDgm9MT/3395ce42d9f9a393d6971c74679d5d76.jpg",
-        link: "https://www.pullbear.com/",
-        store: "Pull&Bear"
-      }
-    ]
-  },
-  {
-    id: 2,
-    category: "Recommended Stores",
-    items: [
-      {
-        name: "Street Style Collection",
-        price: "Various",
-        image: "https://i.ibb.co/F4V6jm40/d9056bb3325fd3fa2e78000d57f3cea6.jpg",
-        link: "https://www.asos.com/",
-        store: "ASOS"
-      },
-      {
-        name: "Urban Fashion",
-        price: "Various",
-        image: "https://i.ibb.co/rGWCJZj7/720f88eae35743c41c89fecae05a347f.jpg",
-        link: "https://www.uniqlo.com/",
-        store: "Uniqlo"
-      }
-    ]
-  }
-];
 
 const AIRecommendations = () => {
   const location = useLocation();
@@ -59,6 +15,7 @@ const AIRecommendations = () => {
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [showRecommendations, setShowRecommendations] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [recommendations, setRecommendations] = useState<any[]>([]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -68,6 +25,7 @@ const AIRecommendations = () => {
         const reader = new FileReader();
         reader.onloadend = () => {
           setPreviewUrl(reader.result as string);
+          setShowRecommendations(false); // Reset recommendations when new image is uploaded
         };
         reader.readAsDataURL(file);
       } else {
@@ -78,6 +36,137 @@ const AIRecommendations = () => {
         });
       }
     }
+  };
+
+  // Demo recommendations based on different detected styles
+  const getRecommendationsForStyle = (style: string) => {
+    const recommendationSets = {
+      casual: [
+        {
+          category: "Similar Style Products",
+          items: [
+            {
+              name: "Classic White Sneakers",
+              price: "$79.99",
+              image: "https://i.ibb.co/JDgm9MT/3395ce42d9f9a393d6971c74679d5d76.jpg",
+              link: "https://www.nike.com/",
+              store: "Nike"
+            },
+            {
+              name: "Denim Jacket",
+              price: "$89.99",
+              image: "https://i.ibb.co/LdYxcj50/truck-jacket.jpg",
+              link: "https://www.zara.com/",
+              store: "Zara"
+            }
+          ]
+        },
+        {
+          category: "Recommended Stores",
+          items: [
+            {
+              name: "Urban Outfitters Collection",
+              price: "Various",
+              image: "https://i.ibb.co/F4V6jm40/d9056bb3325fd3fa2e78000d57f3cea6.jpg",
+              link: "https://www.urbanoutfitters.com/",
+              store: "Urban Outfitters"
+            },
+            {
+              name: "H&M Basics",
+              price: "Various",
+              image: "https://i.ibb.co/rGWCJZj7/720f88eae35743c41c89fecae05a347f.jpg",
+              link: "https://www.hm.com/",
+              store: "H&M"
+            }
+          ]
+        }
+      ],
+      formal: [
+        {
+          category: "Similar Style Products",
+          items: [
+            {
+              name: "Slim Fit Suit",
+              price: "$299.99",
+              image: "https://i.ibb.co/F4V6jm40/d9056bb3325fd3fa2e78000d57f3cea6.jpg",
+              link: "https://www.suitsupply.com/",
+              store: "SuitSupply"
+            },
+            {
+              name: "Oxford Dress Shoes",
+              price: "$189.99",
+              image: "https://i.ibb.co/LdYxcj50/truck-jacket.jpg",
+              link: "https://www.allenedmonds.com/",
+              store: "Allen Edmonds"
+            }
+          ]
+        },
+        {
+          category: "Recommended Stores",
+          items: [
+            {
+              name: "Brooks Brothers Collection",
+              price: "Various",
+              image: "https://i.ibb.co/JDgm9MT/3395ce42d9f9a393d6971c74679d5d76.jpg",
+              link: "https://www.brooksbrothers.com/",
+              store: "Brooks Brothers"
+            },
+            {
+              name: "Hugo Boss Selection",
+              price: "Various",
+              image: "https://i.ibb.co/rGWCJZj7/720f88eae35743c41c89fecae05a347f.jpg",
+              link: "https://www.hugoboss.com/",
+              store: "Hugo Boss"
+            }
+          ]
+        }
+      ],
+      streetwear: [
+        {
+          category: "Similar Style Products",
+          items: [
+            {
+              name: "Graphic Hoodie",
+              price: "$129.99",
+              image: "https://i.ibb.co/JDgm9MT/3395ce42d9f9a393d6971c74679d5d76.jpg",
+              link: "https://www.supreme.com/",
+              store: "Supreme"
+            },
+            {
+              name: "High-Top Sneakers",
+              price: "$199.99",
+              image: "https://i.ibb.co/LdYxcj50/truck-jacket.jpg",
+              link: "https://www.nike.com/",
+              store: "Nike"
+            }
+          ]
+        },
+        {
+          category: "Recommended Stores",
+          items: [
+            {
+              name: "BAPE Collection",
+              price: "Various",
+              image: "https://i.ibb.co/F4V6jm40/d9056bb3325fd3fa2e78000d57f3cea6.jpg",
+              link: "https://www.bape.com/",
+              store: "BAPE"
+            },
+            {
+              name: "Off-White Selection",
+              price: "Various",
+              image: "https://i.ibb.co/rGWCJZj7/720f88eae35743c41c89fecae05a347f.jpg",
+              link: "https://www.off---white.com/",
+              store: "Off-White"
+            }
+          ]
+        }
+      ]
+    };
+
+    // Randomly select a style if not specified
+    const styles = ['casual', 'formal', 'streetwear'];
+    const selectedStyle = style || styles[Math.floor(Math.random() * styles.length)];
+    return recommendationSets[selectedStyle as keyof typeof recommendationSets];
   };
 
   const handleGetRecommendations = async () => {
@@ -91,8 +180,13 @@ const AIRecommendations = () => {
     }
 
     setIsAnalyzing(true);
+    
     // Simulate AI analysis delay
     await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Get random recommendations for demo
+    const newRecommendations = getRecommendationsForStyle("");
+    setRecommendations(newRecommendations);
     setShowRecommendations(true);
     setIsAnalyzing(false);
     
@@ -101,7 +195,7 @@ const AIRecommendations = () => {
       description: "Analysis complete! Here are your recommendations."
     });
   };
-  
+
   const isActive = (path: string) => {
     return location.pathname === path;
   };
@@ -113,6 +207,12 @@ const AIRecommendations = () => {
     { icon: Sparkles, path: "/ai-recommendations", label: "AI" },
     { icon: User, path: "/account", label: "Account" },
   ];
+
+  const handleRemoveImage = () => {
+    setSelectedFile(null);
+    setPreviewUrl("");
+    setShowRecommendations(false);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -167,15 +267,11 @@ const AIRecommendations = () => {
                       <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
                       <Button
                         variant="destructive"
-                        size="sm"
+                        size="icon"
                         className="absolute top-2 right-2"
-                        onClick={() => {
-                          setSelectedFile(null);
-                          setPreviewUrl("");
-                          setShowRecommendations(false);
-                        }}
+                        onClick={handleRemoveImage}
                       >
-                        Remove
+                        <X className="h-4 w-4" />
                       </Button>
                     </div>
                     <Button 
@@ -217,47 +313,43 @@ const AIRecommendations = () => {
                 )}
               </Card>
 
-              {showRecommendations && (
-                <div className="space-y-8">
-                  {demoRecommendations.map((section) => (
-                    <div key={section.id}>
-                      <h2 className="text-xl font-semibold mb-4">{section.category}</h2>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {section.items.map((item, index) => (
-                          <Card 
-                            key={index}
-                            className="p-4 bg-white/5 border-white/10 hover:bg-white/10 transition-colors"
-                          >
-                            <div className="flex gap-4">
-                              <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
-                                <img 
-                                  src={item.image} 
-                                  alt={item.name}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                              <div className="flex-1">
-                                <h3 className="font-medium mb-1">{item.name}</h3>
-                                <p className="text-sm text-white/60 mb-2">{item.price}</p>
-                                <p className="text-sm text-white/60 mb-2">Store: {item.store}</p>
-                                <a 
-                                  href={item.link}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center text-sm text-primary hover:text-primary/80"
-                                >
-                                  Visit Store
-                                  <ExternalLink className="h-4 w-4 ml-1" />
-                                </a>
-                              </div>
-                            </div>
-                          </Card>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
+              {showRecommendations && recommendations.map((section, index) => (
+                <div key={index} className="mb-8">
+                  <h2 className="text-xl font-semibold mb-4">{section.category}</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {section.items.map((item, itemIndex) => (
+                      <Card 
+                        key={itemIndex}
+                        className="p-4 bg-white/5 border-white/10 hover:bg-white/10 transition-colors"
+                      >
+                        <div className="flex gap-4">
+                          <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+                            <img 
+                              src={item.image} 
+                              alt={item.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-medium mb-1">{item.name}</h3>
+                            <p className="text-sm text-white/60 mb-2">{item.price}</p>
+                            <p className="text-sm text-white/60 mb-2">Store: {item.store}</p>
+                            <a 
+                              href={item.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center text-sm text-primary hover:text-primary/80"
+                            >
+                              Visit Store
+                              <ExternalLink className="h-4 w-4 ml-1" />
+                            </a>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
                 </div>
-              )}
+              ))}
             </div>
           </div>
         </main>
