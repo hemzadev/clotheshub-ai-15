@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -6,13 +7,13 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
 import { ChevronDown, Mail, UserRound, ImageIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/components/ui/use-toast";
 import { authService } from "@/services/authService";
+import { useNavigate } from "react-router-dom";
 
 const credentialsSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -20,13 +21,17 @@ const credentialsSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
 });
 
-const profileSchema = z.object({
-  bio: z.string().max(160, "Bio must be less than 160 characters"),
+const pictureSchema = z.object({
   profilePicture: z.string().optional(),
+});
+
+const bioSchema = z.object({
+  bio: z.string().max(150, "Bio must be less than 150 characters"),
 });
 
 const AuthModal = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isEmailAuth, setIsEmailAuth] = useState(false);
   const [isSignUp, setIsSignUp] = useState(true);
   const [signUpStep, setSignUpStep] = useState(1);
@@ -42,11 +47,14 @@ const AuthModal = () => {
     },
   });
 
-  const profileForm = useForm<z.infer<typeof profileSchema>>({
-    resolver: zodResolver(profileSchema),
+  const pictureForm = useForm<z.infer<typeof pictureSchema>>({
+    resolver: zodResolver(pictureSchema),
+  });
+
+  const bioForm = useForm<z.infer<typeof bioSchema>>({
+    resolver: zodResolver(bioSchema),
     defaultValues: {
       bio: "",
-      profilePicture: "",
     },
   });
 
@@ -62,7 +70,7 @@ const AuthModal = () => {
         setSignUpStep(2);
         toast({
           title: "Account created successfully!",
-          description: "Please complete your profile.",
+          description: "Please set up your profile picture.",
         });
       } else {
         await authService.login({
@@ -73,7 +81,7 @@ const AuthModal = () => {
           title: "Welcome back!",
           description: "You have successfully logged in.",
         });
-        // You can add navigation or other post-login logic here
+        navigate('/home');
       }
     } catch (error) {
       toast({
@@ -84,30 +92,50 @@ const AuthModal = () => {
     }
   };
 
-  const onProfileSubmit = async (values: z.infer<typeof profileSchema>) => {
+  const onPictureSubmit = async () => {
+    if (!userId || !profileImage) return;
+
+    try {
+      await authService.updateProfile(userId, {
+        profilePicture: profileImage,
+      });
+      setSignUpStep(3);
+      toast({
+        title: "Profile picture updated!",
+        description: "Now let's add your bio.",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update profile picture.",
+      });
+    }
+  };
+
+  const onBioSubmit = async (values: z.infer<typeof bioSchema>) => {
     if (!userId) return;
 
     try {
       await authService.updateProfile(userId, {
         bio: values.bio,
-        profilePicture: profileImage,
       });
       toast({
-        title: "Profile updated successfully!",
-        description: "Your profile has been completed.",
+        title: "Profile completed!",
+        description: "Welcome to StylisH!",
       });
-      // You can add navigation or other post-profile-update logic here
+      navigate('/home');
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "An error occurred while updating your profile.",
+        description: "Failed to update bio.",
       });
     }
   };
 
   const handleGoogleLogin = () => {
-    authService.initiateGoogleAuth();
+    window.location.href = "http://localhost:8088/oauth2/authorization/google";
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,7 +155,9 @@ const AuthModal = () => {
         <DialogTitle className="text-2xl text-center font-medium">
           {isEmailAuth ? (
             isSignUp ? (
-              signUpStep === 1 ? "Create an account" : "Complete your profile"
+              signUpStep === 1 ? "Create an account" :
+              signUpStep === 2 ? "Add a profile picture" :
+              "Tell us about yourself"
             ) : "Welcome back"
           ) : "Welcome to StylisH"}
         </DialogTitle>
@@ -233,9 +263,9 @@ const AuthModal = () => {
                     </Button>
                   </form>
                 </Form>
-              ) : (
-                <Form {...profileForm}>
-                  <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-4">
+              ) : signUpStep === 2 ? (
+                <Form {...pictureForm}>
+                  <form onSubmit={pictureForm.handleSubmit(onPictureSubmit)} className="space-y-4">
                     <div className="flex flex-col items-center gap-4 mb-6">
                       <Avatar className="h-24 w-24 cursor-pointer relative group">
                         {profileImage ? (
@@ -259,15 +289,37 @@ const AuthModal = () => {
                         Click to upload profile picture
                       </p>
                     </div>
+                    <div className="flex gap-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => setSignUpStep(1)}
+                      >
+                        Back
+                      </Button>
+                      <Button 
+                        type="submit" 
+                        className="flex-1 bg-black text-white hover:bg-black/90"
+                        disabled={!profileImage}
+                      >
+                        Continue
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              ) : (
+                <Form {...bioForm}>
+                  <form onSubmit={bioForm.handleSubmit(onBioSubmit)} className="space-y-4">
                     <FormField
-                      control={profileForm.control}
+                      control={bioForm.control}
                       name="bio"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Bio</FormLabel>
                           <FormControl>
                             <Textarea 
-                              placeholder="Tell us about yourself" 
+                              placeholder="Tell us about yourself (max 150 characters)" 
                               className="resize-none"
                               {...field}
                             />
@@ -281,7 +333,7 @@ const AuthModal = () => {
                         type="button"
                         variant="outline"
                         className="flex-1"
-                        onClick={() => setSignUpStep(1)}
+                        onClick={() => setSignUpStep(2)}
                       >
                         Back
                       </Button>
@@ -289,7 +341,7 @@ const AuthModal = () => {
                         type="submit" 
                         className="flex-1 bg-black text-white hover:bg-black/90"
                       >
-                        Complete Sign Up
+                        Complete Profile
                       </Button>
                     </div>
                   </form>
