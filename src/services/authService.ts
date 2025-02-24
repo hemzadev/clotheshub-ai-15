@@ -1,4 +1,3 @@
-
 import axios from 'axios';
 import { RegisterRequest, LoginRequest, AuthResponse, ProfileUpdateRequest, UserDTO } from '@/types/auth';
 
@@ -24,18 +23,21 @@ axiosInstance.interceptors.request.use((config) => {
 
 export const authService = {
   async register(data: RegisterRequest): Promise<AuthResponse> {
-    const response = await axiosInstance.post<AuthResponse>('/auth/register', data);
-    
-    // Store tokens immediately after successful registration
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('refreshToken', response.data.refreshToken);
+    try {
+      const response = await axiosInstance.post<AuthResponse>('/auth/register', data);
+      console.log('Registration response:', response.data);
+      
+      if (response.data.token && response.data.user) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('refreshToken', response.data.refreshToken);
+        return response.data;
+      } else {
+        throw new Error('Invalid response from server');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
     }
-
-    // Log the response for debugging
-    console.log('Registration response:', response.data);
-    
-    return response.data;
   },
 
   async login(data: LoginRequest): Promise<AuthResponse> {
