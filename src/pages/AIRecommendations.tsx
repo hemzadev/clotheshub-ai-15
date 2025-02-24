@@ -61,133 +61,42 @@ const AIRecommendations = () => {
     }
   }, []);
 
-  const getRecommendationsForStyle = (style: string) => {
-    const recommendationSets = {
-      casual: [
-        {
-          category: "Similar Style Products",
-          items: [
-            {
-              name: "Classic White Sneakers",
-              price: "$79.99",
-              image: "https://i.ibb.co/JDgm9MT/3395ce42d9f9a393d6971c74679d5d76.jpg",
-              link: "https://www.nike.com/",
-              store: "Nike"
-            },
-            {
-              name: "Denim Jacket",
-              price: "$89.99",
-              image: "https://i.ibb.co/LdYxcj50/truck-jacket.jpg",
-              link: "https://www.zara.com/",
-              store: "Zara"
-            }
-          ]
-        },
-        {
-          category: "Recommended Stores",
-          items: [
-            {
-              name: "Urban Outfitters Collection",
-              price: "Various",
-              image: "https://i.ibb.co/F4V6jm40/d9056bb3325fd3fa2e78000d57f3cea6.jpg",
-              link: "https://www.urbanoutfitters.com/",
-              store: "Urban Outfitters"
-            },
-            {
-              name: "H&M Basics",
-              price: "Various",
-              image: "https://i.ibb.co/rGWCJZj7/720f88eae35743c41c89fecae05a347f.jpg",
-              link: "https://www.hm.com/",
-              store: "H&M"
-            }
-          ]
-        }
-      ],
-      formal: [
-        {
-          category: "Similar Style Products",
-          items: [
-            {
-              name: "Slim Fit Suit",
-              price: "$299.99",
-              image: "https://i.ibb.co/F4V6jm40/d9056bb3325fd3fa2e78000d57f3cea6.jpg",
-              link: "https://www.suitsupply.com/",
-              store: "SuitSupply"
-            },
-            {
-              name: "Oxford Dress Shoes",
-              price: "$189.99",
-              image: "https://i.ibb.co/LdYxcj50/truck-jacket.jpg",
-              link: "https://www.allenedmonds.com/",
-              store: "Allen Edmonds"
-            }
-          ]
-        },
-        {
-          category: "Recommended Stores",
-          items: [
-            {
-              name: "Brooks Brothers Collection",
-              price: "Various",
-              image: "https://i.ibb.co/JDgm9MT/3395ce42d9f9a393d6971c74679d5d76.jpg",
-              link: "https://www.brooksbrothers.com/",
-              store: "Brooks Brothers"
-            },
-            {
-              name: "Hugo Boss Selection",
-              price: "Various",
-              image: "https://i.ibb.co/rGWCJZj7/720f88eae35743c41c89fecae05a347f.jpg",
-              link: "https://www.hugoboss.com/",
-              store: "Hugo Boss"
-            }
-          ]
-        }
-      ],
-      streetwear: [
-        {
-          category: "Similar Style Products",
-          items: [
-            {
-              name: "Graphic Hoodie",
-              price: "$129.99",
-              image: "https://i.ibb.co/JDgm9MT/3395ce42d9f9a393d6971c74679d5d76.jpg",
-              link: "https://www.supreme.com/",
-              store: "Supreme"
-            },
-            {
-              name: "High-Top Sneakers",
-              price: "$199.99",
-              image: "https://i.ibb.co/LdYxcj50/truck-jacket.jpg",
-              link: "https://www.nike.com/",
-              store: "Nike"
-            }
-          ]
-        },
-        {
-          category: "Recommended Stores",
-          items: [
-            {
-              name: "BAPE Collection",
-              price: "Various",
-              image: "https://i.ibb.co/F4V6jm40/d9056bb3325fd3fa2e78000d57f3cea6.jpg",
-              link: "https://www.bape.com/",
-              store: "BAPE"
-            },
-            {
-              name: "Off-White Selection",
-              price: "Various",
-              image: "https://i.ibb.co/rGWCJZj7/720f88eae35743c41c89fecae05a347f.jpg",
-              link: "https://www.off---white.com/",
-              store: "Off-White"
-            }
-          ]
-        }
-      ]
-    };
-
-    const styles = ['casual', 'formal', 'streetwear'];
-    const selectedStyle = style || styles[Math.floor(Math.random() * styles.length)];
-    return recommendationSets[selectedStyle as keyof typeof recommendationSets];
+  const getRecommendationsForStyle = () => {
+    return [
+      {
+        category: "Recommended Jackets",
+        items: [
+          {
+            name: "Korean Black Leather Jacket",
+            price: "$89.99",
+            image: "https://www.soodress.com/cdn/shop/products/S161c07dc750849e2878df4b6d9d654b6U.jpg",
+            link: "https://www.soodress.com/products/korean-black-leather-jacket-women-winter-long-womens-moto-biker-zipper-jacket-streetwear-harajuku-y2k-loose-womens-coat-2021",
+            store: "Soodress"
+          },
+          {
+            name: "Retro Air Force Pilot Leather Jacket",
+            price: "$129.99",
+            image: "https://www.talkdecor.shop/cdn/shop/products/Hc9c7d12e83694100a6116af98a33a1a70.jpg",
+            link: "https://www.talkdecor.shop/products/retro-american-air-force-fur-all-in-one-pilot-leather-jacket-23309",
+            store: "Talk Decor"
+          },
+          {
+            name: "Urban Explorer Corduroy Jacket",
+            price: "$79.99",
+            image: "https://www.kaxide.com/cdn/shop/products/S6772ffa6b171455ea5a08dd27901d4b58.jpg",
+            link: "https://www.kaxide.com/products/urban-explorer-corduroy-jacket",
+            store: "Kaxide"
+          },
+          {
+            name: "Quilted Lined Corduroy Coat",
+            price: "$99.99",
+            image: "https://www.sdcts.com/cdn/shop/products/S457fc20ad0624475b0138bb374e1b1eaP.jpg",
+            link: "https://www.sdcts.com/products/quilted-lined-corduroy-coat-q9td",
+            store: "SDCTS"
+          }
+        ]
+      }
+    ];
   };
 
   const handleGetRecommendations = async () => {
@@ -204,7 +113,7 @@ const AIRecommendations = () => {
     
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    const newRecommendations = getRecommendationsForStyle("");
+    const newRecommendations = getRecommendationsForStyle();
     setRecommendations(newRecommendations);
     setShowRecommendations(true);
     setIsAnalyzing(false);
@@ -276,7 +185,7 @@ const AIRecommendations = () => {
               <Sparkles className="h-12 w-12 mx-auto mb-4 text-primary animate-pulse" />
               <h1 className="text-3xl font-semibold mb-4">AI Style Recommendations</h1>
               <p className="text-white/60 mb-8">
-                Upload a fashion image and get personalized product and store recommendations
+                Upload a fashion image and get personalized product recommendations
               </p>
               
               <Card className="p-8 bg-white/5 border-white/10 mb-8">
@@ -339,43 +248,49 @@ const AIRecommendations = () => {
                 )}
               </Card>
 
-              {showRecommendations && recommendations.map((section, index) => (
-                <div key={index} className="mb-8">
-                  <h2 className="text-xl font-semibold mb-4">{section.category}</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {section.items.map((item, itemIndex) => (
-                      <Card 
-                        key={itemIndex}
-                        className="p-4 bg-white/5 border-white/10 hover:bg-white/10 transition-colors"
-                      >
-                        <div className="flex gap-4">
-                          <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
-                            <img 
-                              src={item.image} 
-                              alt={item.name}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="font-medium mb-1">{item.name}</h3>
-                            <p className="text-sm text-white/60 mb-2">{item.price}</p>
-                            <p className="text-sm text-white/60 mb-2">Store: {item.store}</p>
+              {showRecommendations && (
+                <div className="grid gap-8">
+                  {recommendations.map((section, index) => (
+                    <div key={index} className="space-y-4">
+                      <h2 className="text-xl font-semibold text-left">{section.category}</h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {section.items.map((item, itemIndex) => (
+                          <Card 
+                            key={itemIndex}
+                            className="overflow-hidden hover:ring-2 hover:ring-primary/50 transition-all duration-200"
+                          >
                             <a 
                               href={item.link}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center text-sm text-primary hover:text-primary/80"
+                              className="block"
                             >
-                              Visit Store
-                              <ExternalLink className="h-4 w-4 ml-1" />
+                              <div className="aspect-[4/3] relative">
+                                <img 
+                                  src={item.image} 
+                                  alt={item.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                              <div className="p-4">
+                                <h3 className="font-medium text-lg mb-2">{item.name}</h3>
+                                <p className="text-white/60 mb-1">{item.price}</p>
+                                <p className="text-sm text-white/60">Store: {item.store}</p>
+                                <Button 
+                                  variant="ghost" 
+                                  className="w-full mt-3 hover:bg-primary hover:text-white"
+                                >
+                                  View Product <ExternalLink className="h-4 w-4 ml-2" />
+                                </Button>
+                              </div>
                             </a>
-                          </div>
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </main>
