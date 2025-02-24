@@ -107,8 +107,7 @@ const AuthModal = () => {
   };
 
   const handleGoogleLogin = () => {
-    // Implement Google OAuth login
-    window.location.href = `${process.env.REACT_APP_API_URL}/oauth2/authorize/google?redirect_uri=${window.location.origin}`;
+    authService.initiateGoogleAuth();
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {

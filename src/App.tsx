@@ -33,6 +33,7 @@ const App = () => (
           <Route path="/settings" element={<Settings />} />
           <Route path="/user/:username" element={<UserProfile />} />
           <Route path="/pin/:id" element={<PinDetail />} />
+          <Route path="/oauth2/callback" element={<Home />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
