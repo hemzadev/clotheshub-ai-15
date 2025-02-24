@@ -1,4 +1,3 @@
-
 import HomeNavbar from "@/components/HomeNavbar";
 import { Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -85,7 +84,8 @@ const Create = () => {
       description,
       type,
       imageUrl: previewUrl,
-      user: users[0] // Using first user as the creator
+      user: users[0],
+      likes: 0
     };
 
     // Add the new pin to the static data
