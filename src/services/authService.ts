@@ -88,7 +88,11 @@ export const authService = {
           mutation UpdateProfilePicture($userId: ID!, $pictureUrl: String!) {
             updateProfilePicture(userId: $userId, pictureUrl: $pictureUrl) {
               id
+              username
+              email
+              bio
               profilePicture
+              active
             }
           }
         `,
@@ -101,6 +105,8 @@ export const authService = {
       if (pictureResponse.data.errors) {
         throw new Error(pictureResponse.data.errors[0].message);
       }
+
+      return pictureResponse.data.data.updateProfilePicture;
     }
 
     if (data.bio) {
@@ -109,7 +115,11 @@ export const authService = {
           mutation UpdateBio($userId: ID!, $bio: String!) {
             updateBio(userId: $userId, bio: $bio) {
               id
+              username
+              email
               bio
+              profilePicture
+              active
             }
           }
         `,
@@ -122,6 +132,8 @@ export const authService = {
       if (bioResponse.data.errors) {
         throw new Error(bioResponse.data.errors[0].message);
       }
+
+      return bioResponse.data.data.updateBio;
     }
 
     return this.getCurrentUser();
