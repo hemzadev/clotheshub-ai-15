@@ -1,13 +1,40 @@
 
+import { useEffect, useState } from "react";
 import HomeNavbar from "@/components/HomeNavbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Home as HomeIcon, PlusCircle, Grid, User, Settings, Sparkles } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { authService } from "@/services/authService";
+import { UserDTO } from "@/types/auth";
+import { useToast } from "@/components/ui/use-toast";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const Account = () => {
   const location = useLocation();
+  const { toast } = useToast();
+  const [user, setUser] = useState<UserDTO | null>(null);
+  const [loading, setLoading] = useState(true);
   
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userData = await authService.getCurrentUser();
+        setUser(userData);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to load user data",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [toast]);
+
   const isActive = (path: string) => {
     return location.pathname === path;
   };
@@ -61,16 +88,38 @@ const Account = () => {
           <div className="container py-8">
             <div className="max-w-2xl mx-auto">
               <h1 className="text-2xl font-semibold mb-8">Account Settings</h1>
-              <Card className="p-6 bg-white/5 border-white/10">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-20 h-20 rounded-full bg-white/10" />
-                  <div>
-                    <h2 className="text-lg font-medium">John Doe</h2>
-                    <p className="text-white/60">john.doe@example.com</p>
+              
+              {loading ? (
+                <Card className="p-6 bg-white/5 border-white/10">
+                  <div className="h-20 animate-pulse bg-white/10 rounded-lg" />
+                </Card>
+              ) : user ? (
+                <Card className="p-6 bg-white/5 border-white/10">
+                  <div className="flex items-center gap-4 mb-6">
+                    <Avatar className="h-20 w-20">
+                      {user.profilePicture ? (
+                        <AvatarImage src={user.profilePicture} alt={user.username} />
+                      ) : (
+                        <AvatarFallback>
+                          {user.username.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                    <div>
+                      <h2 className="text-lg font-medium">{user.username}</h2>
+                      <p className="text-white/60">{user.email}</p>
+                      {user.bio && (
+                        <p className="text-white/80 mt-2 text-sm">{user.bio}</p>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <Button className="bg-primary hover:bg-primary/90">Edit Profile</Button>
-              </Card>
+                  <Button className="bg-primary hover:bg-primary/90">Edit Profile</Button>
+                </Card>
+              ) : (
+                <Card className="p-6 bg-white/5 border-white/10">
+                  <p className="text-white/60">Please sign in to view your profile</p>
+                </Card>
+              )}
               
               <div className="mt-8 space-y-4">
                 <Card className="p-6 bg-white/5 border-white/10">
