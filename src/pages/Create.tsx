@@ -10,10 +10,12 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { staticPins, users } from "@/data/staticData";
 import { Card } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
 
 const Create = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [title, setTitle] = useState("");
@@ -34,16 +36,34 @@ const Create = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // For demo purposes, we'll just console.log the new pin
+    
+    if (!previewUrl || !title) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields and upload an image",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const newPin = {
       id: (staticPins.length + 1).toString(),
       title,
       description,
       type,
-      imageUrl: previewUrl || "https://placeholder.com/300x400",
+      imageUrl: previewUrl,
       user: users[0] // Using first user as the creator
     };
-    console.log("New pin created:", newPin);
+
+    // Add the new pin to the static data
+    staticPins.push(newPin);
+    
+    toast({
+      title: "Success",
+      description: "Pin created successfully!"
+    });
+
+    // Navigate to the home page
     navigate("/home");
   };
   
