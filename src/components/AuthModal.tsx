@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,48 +11,104 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useToast } from "@/components/ui/use-toast";
+import { authService } from "@/services/authService";
 
 const credentialsSchema = z.object({
   email: z.string().email("Please enter a valid email"),
   password: z.string().min(6, "Password must be at least 6 characters"),
+  username: z.string().min(3, "Username must be at least 3 characters"),
 });
 
 const profileSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
   bio: z.string().max(160, "Bio must be less than 160 characters"),
   profilePicture: z.string().optional(),
 });
 
 const AuthModal = () => {
+  const { toast } = useToast();
   const [isEmailAuth, setIsEmailAuth] = useState(false);
   const [isSignUp, setIsSignUp] = useState(true);
   const [signUpStep, setSignUpStep] = useState(1);
   const [profileImage, setProfileImage] = useState<string>("");
+  const [userId, setUserId] = useState<number | null>(null);
   
   const credentialsForm = useForm<z.infer<typeof credentialsSchema>>({
     resolver: zodResolver(credentialsSchema),
     defaultValues: {
       email: "",
       password: "",
+      username: "",
     },
   });
 
   const profileForm = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      username: "",
       bio: "",
       profilePicture: "",
     },
   });
 
-  const onCredentialsSubmit = (values: z.infer<typeof credentialsSchema>) => {
-    console.log(values);
-    setSignUpStep(2);
+  const onCredentialsSubmit = async (values: z.infer<typeof credentialsSchema>) => {
+    try {
+      if (isSignUp) {
+        const response = await authService.register({
+          email: values.email,
+          password: values.password,
+          username: values.username,
+        });
+        setUserId(response.user.id);
+        setSignUpStep(2);
+        toast({
+          title: "Account created successfully!",
+          description: "Please complete your profile.",
+        });
+      } else {
+        await authService.login({
+          email: values.email,
+          password: values.password,
+        });
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully logged in.",
+        });
+        // You can add navigation or other post-login logic here
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "An error occurred. Please try again.",
+      });
+    }
   };
 
-  const onProfileSubmit = (values: z.infer<typeof profileSchema>) => {
-    console.log({ ...values, profilePicture: profileImage });
+  const onProfileSubmit = async (values: z.infer<typeof profileSchema>) => {
+    if (!userId) return;
+
+    try {
+      await authService.updateProfile(userId, {
+        bio: values.bio,
+        profilePicture: profileImage,
+      });
+      toast({
+        title: "Profile updated successfully!",
+        description: "Your profile has been completed.",
+      });
+      // You can add navigation or other post-profile-update logic here
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "An error occurred while updating your profile.",
+      });
+    }
+  };
+
+  const handleGoogleLogin = () => {
+    // Implement Google OAuth login
+    window.location.href = `${process.env.REACT_APP_API_URL}/oauth2/authorize/google?redirect_uri=${window.location.origin}`;
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,7 +142,11 @@ const AuthModal = () => {
       <div className="flex flex-col gap-3 mt-4">
         {!isEmailAuth ? (
           <>
-            <Button variant="outline" className="w-full gap-2">
+            <Button 
+              variant="outline" 
+              className="w-full gap-2"
+              onClick={handleGoogleLogin}
+            >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path
                   fill="currentColor"
@@ -131,6 +190,19 @@ const AuthModal = () => {
               signUpStep === 1 ? (
                 <Form {...credentialsForm}>
                   <form onSubmit={credentialsForm.handleSubmit(onCredentialsSubmit)} className="space-y-4">
+                    <FormField
+                      control={credentialsForm.control}
+                      name="username"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Username</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Choose a username" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     <FormField
                       control={credentialsForm.control}
                       name="email"
@@ -188,19 +260,6 @@ const AuthModal = () => {
                         Click to upload profile picture
                       </p>
                     </div>
-                    <FormField
-                      control={profileForm.control}
-                      name="username"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Username</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Choose a username" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                     <FormField
                       control={profileForm.control}
                       name="bio"
