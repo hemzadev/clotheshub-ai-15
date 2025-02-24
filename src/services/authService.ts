@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { RegisterRequest, LoginRequest, AuthResponse, ProfileUpdateRequest, UserDTO } from '@/types/auth';
 
-const API_URL = 'http://localhost:8088/api';
+const API_URL = 'http://localhost:8088';
 
 // Create axios instance with default config
 const axiosInstance = axios.create({
@@ -33,7 +33,7 @@ axiosInstance.interceptors.response.use(
       const refreshToken = localStorage.getItem('refreshToken');
       
       try {
-        const response = await axiosInstance.post<AuthResponse>('/auth/refresh', null, {
+        const response = await axiosInstance.post<AuthResponse>('/api/auth/refresh', null, {
           params: { refreshToken }
         });
         
@@ -55,7 +55,7 @@ axiosInstance.interceptors.response.use(
 export const authService = {
   async register(data: RegisterRequest): Promise<AuthResponse> {
     try {
-      const response = await axiosInstance.post<AuthResponse>('/auth/register', data);
+      const response = await axiosInstance.post<AuthResponse>('/api/auth/register', data);
       console.log('Registration response:', response.data);
       
       if (response.data.token && response.data.user) {
@@ -73,7 +73,7 @@ export const authService = {
   },
 
   async login(data: LoginRequest): Promise<AuthResponse> {
-    const response = await axiosInstance.post<AuthResponse>('/auth/login', data);
+    const response = await axiosInstance.post<AuthResponse>('/api/auth/login', data);
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('refreshToken', response.data.refreshToken);
@@ -99,6 +99,11 @@ export const authService = {
         variables: { 
           userId: userId.toString(), 
           pictureUrl: data.profilePicture 
+        }
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
         }
       });
 
@@ -127,6 +132,11 @@ export const authService = {
           userId: userId.toString(), 
           bio: data.bio 
         }
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        }
       });
 
       if (bioResponse.data.errors) {
@@ -153,6 +163,11 @@ export const authService = {
           }
         }
       `
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      }
     });
 
     if (response.data.errors) {
