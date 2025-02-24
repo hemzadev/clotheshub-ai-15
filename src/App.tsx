@@ -14,6 +14,7 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import UserProfile from "./pages/UserProfile";
 import PinDetail from "./pages/PinDetail";
+import OAuth2Callback from "./pages/OAuth2Callback";
 
 const queryClient = new QueryClient();
 
@@ -33,7 +34,7 @@ const App = () => (
           <Route path="/settings" element={<Settings />} />
           <Route path="/user/:username" element={<UserProfile />} />
           <Route path="/pin/:id" element={<PinDetail />} />
-          <Route path="/oauth2/callback" element={<Home />} />
+          <Route path="/oauth2/callback" element={<OAuth2Callback />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -66,12 +65,17 @@ const AuthModal = () => {
           password: values.password,
           username: values.username,
         });
-        setUserId(response.user.id);
-        setSignUpStep(2);
-        toast({
-          title: "Account created successfully!",
-          description: "Please set up your profile picture.",
-        });
+        
+        if (response.user?.id) {
+          setUserId(response.user.id);
+          setSignUpStep(2);
+          toast({
+            title: "Account created successfully!",
+            description: "Please set up your profile picture.",
+          });
+        } else {
+          throw new Error("Failed to get user ID");
+        }
       } else {
         await authService.login({
           email: values.email,
@@ -87,7 +91,7 @@ const AuthModal = () => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "An error occurred. Please try again.",
+        description: error instanceof Error ? error.message : "An error occurred. Please try again.",
       });
     }
   };
