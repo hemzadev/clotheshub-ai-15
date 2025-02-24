@@ -39,8 +39,8 @@ const Home = () => {
                 imageUrl
                 user {
                   id
-                  name
-                  avatar
+                  username
+                  profilePicture
                 }
               }
             }
@@ -76,8 +76,8 @@ const Home = () => {
                 imageUrl
                 user {
                   id
-                  name
-                  avatar
+                  username
+                  profilePicture
                 }
               }
             }
@@ -113,8 +113,8 @@ const Home = () => {
                 imageUrl
                 user {
                   id
-                  name
-                  avatar
+                  username
+                  profilePicture
                 }
               }
             }
@@ -205,3 +205,4 @@ const Home = () => {
 };
 
 export default Home;
+

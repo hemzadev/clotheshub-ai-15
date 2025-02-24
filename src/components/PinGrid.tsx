@@ -9,8 +9,8 @@ import { useInView } from "react-intersection-observer";
 
 interface User {
   id: string;
-  name: string;
-  avatar: string;
+  username: string;
+  profilePicture: string;
 }
 
 interface Pin {
@@ -111,16 +111,16 @@ const PinGrid = ({ pins = [], loading = false }: PinGridProps) => {
             </div>
           </Link>
           <div className="p-4 flex items-center gap-3">
-            <Link to={`/user/${pin.user.name.toLowerCase().replace(/\s+/g, '-')}`} className="hover:opacity-80 transition-opacity">
+            <Link to={`/user/${pin.user.username.toLowerCase().replace(/\s+/g, '-')}`} className="hover:opacity-80 transition-opacity">
               <Avatar className="border-2 border-border">
-                <img src={pin.user.avatar} alt={pin.user.name} />
+                <img src={pin.user.profilePicture} alt={pin.user.username} />
               </Avatar>
             </Link>
             <Link 
-              to={`/user/${pin.user.name.toLowerCase().replace(/\s+/g, '-')}`}
+              to={`/user/${pin.user.username.toLowerCase().replace(/\s+/g, '-')}`}
               className="text-sm text-foreground/90 font-medium hover:text-foreground transition-colors"
             >
-              {pin.user.name}
+              {pin.user.username}
             </Link>
           </div>
         </div>
@@ -136,3 +136,4 @@ const PinGrid = ({ pins = [], loading = false }: PinGridProps) => {
 };
 
 export default PinGrid;
+
