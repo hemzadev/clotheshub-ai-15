@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 import HomeNavbar from "@/components/HomeNavbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Home as HomeIcon, PlusCircle, Grid, User, Settings, Sparkles } from "lucide-react";
+import { Home as HomeIcon, PlusCircle, Grid, User, Settings, Sparkles, Edit } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { userStore } from "@/store/userStore";
 import { useToast } from "@/components/ui/use-toast";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
 
 const Account = () => {
   const location = useLocation();
@@ -70,25 +71,46 @@ const Account = () => {
               
               {userData ? (
                 <Card className="p-6 bg-white/5 border-white/10">
-                  <div className="flex items-center gap-4 mb-6">
-                    <Avatar className="h-20 w-20">
-                      {userData.profilePicture ? (
-                        <AvatarImage src={userData.profilePicture} alt={userData.username} />
-                      ) : (
-                        <AvatarFallback>
-                          {userData.username.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      )}
-                    </Avatar>
-                    <div>
-                      <h2 className="text-lg font-medium">{userData.username}</h2>
-                      <p className="text-white/60">{userData.email}</p>
+                  <div className="flex items-start gap-6">
+                    <div className="relative group">
+                      <Avatar className="h-24 w-24 border-2 border-primary">
+                        {userData.profilePicture ? (
+                          <AvatarImage src={userData.profilePicture} alt={userData.username} />
+                        ) : (
+                          <AvatarFallback className="text-lg">
+                            {userData.username.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        )}
+                      </Avatar>
+                      <Button 
+                        size="icon" 
+                        className="absolute -bottom-2 -right-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h2 className="text-2xl font-semibold">{userData.username}</h2>
+                          <p className="text-white/60">{userData.email}</p>
+                        </div>
+                        <Button className="bg-primary hover:bg-primary/90">
+                          <Edit className="h-4 w-4 mr-2" />
+                          Edit Profile
+                        </Button>
+                      </div>
                       {userData.bio && (
-                        <p className="text-white/80 mt-2 text-sm">{userData.bio}</p>
+                        <>
+                          <Separator className="my-4" />
+                          <div>
+                            <h3 className="text-sm font-medium text-white/60 mb-2">Bio</h3>
+                            <p className="text-white/80">{userData.bio}</p>
+                          </div>
+                        </>
                       )}
                     </div>
                   </div>
-                  <Button className="bg-primary hover:bg-primary/90">Edit Profile</Button>
                 </Card>
               ) : (
                 <Card className="p-6 bg-white/5 border-white/10">

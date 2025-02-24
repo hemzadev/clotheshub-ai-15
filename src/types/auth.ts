@@ -3,6 +3,8 @@ export interface RegisterRequest {
   username: string;
   email: string;
   password: string;
+  bio?: string;
+  profilePicture?: string;
 }
 
 export interface LoginRequest {
