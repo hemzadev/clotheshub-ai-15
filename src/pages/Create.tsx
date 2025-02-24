@@ -4,7 +4,7 @@ import { Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Home as HomeIcon, PlusCircle, Grid, User, Settings, Sparkles } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -21,18 +21,51 @@ const Create = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [type, setType] = useState("PRODUCT");
+  const [isDragging, setIsDragging] = useState(false);
   
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
+  const handleFile = (file: File) => {
+    if (file.type.startsWith('image/')) {
       setSelectedFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewUrl(reader.result as string);
       };
       reader.readAsDataURL(file);
+    } else {
+      toast({
+        title: "Error",
+        description: "Please upload an image file",
+        variant: "destructive"
+      });
     }
   };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleFile(file);
+    }
+  };
+
+  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      handleFile(file);
+    }
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,7 +153,16 @@ const Create = () => {
           <div className="container max-w-2xl mx-auto pt-8">
             <Card className="p-6 bg-white/5 border-white/10">
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-white/10 rounded-[1.5rem] bg-white/5">
+                <div
+                  className={`flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-[1.5rem] transition-colors ${
+                    isDragging
+                      ? "border-primary bg-primary/10"
+                      : "border-white/10 bg-white/5"
+                  }`}
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                >
                   {previewUrl ? (
                     <div className="relative w-full max-w-md aspect-[3/4] rounded-lg overflow-hidden">
                       <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
