@@ -36,7 +36,8 @@ export const staticPins = [
     description: "Classic denim jacket with unique truck design",
     type: "PRODUCT",
     imageUrl: "https://i.ibb.co/LdYxcj50/truck-jacket.jpg",
-    user: users[0]
+    user: users[0],
+    likes: 0
   },
   {
     id: "2",
@@ -44,7 +45,8 @@ export const staticPins = [
     description: "Modern street fashion combination",
     type: "PRODUCT",
     imageUrl: "https://i.ibb.co/LDpwG5Y7/6b4143c82251eef546f5c6a33ba2784a.jpg",
-    user: users[1]
+    user: users[1],
+    likes: 0
   },
   {
     id: "3",
@@ -52,7 +54,8 @@ export const staticPins = [
     description: "Simple yet sophisticated outfit",
     type: "PRODUCT",
     imageUrl: "https://i.ibb.co/JDgm9MT/3395ce42d9f9a393d6971c74679d5d76.jpg",
-    user: users[2]
+    user: users[2],
+    likes: 0
   },
   {
     id: "4",
@@ -60,7 +63,8 @@ export const staticPins = [
     description: "Perfect combination for summer days",
     type: "OUTFIT",
     imageUrl: "https://i.ibb.co/F4V6jm40/d9056bb3325fd3fa2e78000d57f3cea6.jpg",
-    user: users[0]
+    user: users[0],
+    likes: 0
   },
   {
     id: "5",
@@ -68,7 +72,8 @@ export const staticPins = [
     description: "Urban style outfit inspiration",
     type: "OUTFIT",
     imageUrl: "https://i.ibb.co/rGWCJZj7/720f88eae35743c41c89fecae05a347f.jpg",
-    user: users[1]
+    user: users[1],
+    likes: 0
   },
   {
     id: "6",
@@ -76,6 +81,20 @@ export const staticPins = [
     description: "Contemporary street style ensemble",
     type: "OUTFIT",
     imageUrl: "https://i.ibb.co/rGWCJZj7/720f88eae35743c41c89fecae05a347f.jpg",
-    user: users[2]
+    user: users[2],
+    likes: 0
   }
 ];
+
+export const wardrobes: Wardrobe[] = [];
+
+export interface Wardrobe {
+  id: string;
+  name: string;
+  description: string;
+  pins: typeof staticPins[0][];
+  createdAt: Date;
+}
+
+export const likedPins: Set<string> = new Set();
+

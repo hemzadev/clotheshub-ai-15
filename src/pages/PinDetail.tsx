@@ -1,16 +1,21 @@
 
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import HomeNavbar from "@/components/HomeNavbar";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
-import { Heart, Bookmark, Share2, MessageCircle, ArrowLeft } from "lucide-react";
+import { Heart, FolderPlus, Share2, MessageCircle, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
-import { staticPins } from "@/data/staticData";
+import { staticPins, likedPins, wardrobes } from "@/data/staticData";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useToast } from "@/components/ui/use-toast";
 
 const PinDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [isWardrobeDialogOpen, setIsWardrobeDialogOpen] = useState(false);
   
   const pin = staticPins.find(p => p.id === id);
   const similarPins = staticPins.filter(p => 
@@ -20,6 +25,32 @@ const PinDetail = () => {
   if (!pin) {
     return <div>Pin not found</div>;
   }
+
+  const isLiked = likedPins.has(pin.id);
+
+  const handleLike = () => {
+    if (isLiked) {
+      likedPins.delete(pin.id);
+      pin.likes--;
+    } else {
+      likedPins.add(pin.id);
+      pin.likes++;
+    }
+    // Force re-render
+    window.location.reload();
+  };
+
+  const handleAddToWardrobe = (wardrobeId: string) => {
+    const wardrobe = wardrobes.find(w => w.id === wardrobeId);
+    if (wardrobe && !wardrobe.pins.find(p => p.id === pin.id)) {
+      wardrobe.pins.push(pin);
+      setIsWardrobeDialogOpen(false);
+      toast({
+        title: "Success",
+        description: `Added to ${wardrobe.name}`
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -35,7 +66,6 @@ const PinDetail = () => {
         </Button>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Left Column - Image */}
           <div>
             <img 
               src={pin.imageUrl} 
@@ -44,17 +74,39 @@ const PinDetail = () => {
             />
           </div>
 
-          {/* Right Column - Info */}
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <div className="flex gap-2">
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="h-10 w-10 rounded-full"
+                  onClick={() => {
+                    if (wardrobes.length === 0) {
+                      toast({
+                        title: "No Wardrobes",
+                        description: "Create a wardrobe first to save pins",
+                        variant: "destructive"
+                      });
+                      return;
+                    }
+                    setIsWardrobeDialogOpen(true);
+                  }}
+                >
+                  <FolderPlus className="h-5 w-5" />
+                </Button>
                 <Button variant="secondary" size="icon" className="h-10 w-10 rounded-full">
                   <Share2 className="h-5 w-5" />
                 </Button>
-                <Button variant="secondary" size="icon" className="h-10 w-10 rounded-full">
-                  <Bookmark className="h-5 w-5" />
-                </Button>
               </div>
+              <Button
+                variant={isLiked ? "default" : "secondary"}
+                size="icon"
+                className="h-10 w-10 rounded-full"
+                onClick={handleLike}
+              >
+                <Heart className={`h-5 w-5 ${isLiked ? "fill-current" : ""}`} />
+              </Button>
             </div>
 
             <h1 className="text-2xl font-semibold">{pin.title}</h1>
@@ -73,8 +125,8 @@ const PinDetail = () => {
 
             <div className="flex gap-4">
               <div className="flex items-center gap-2">
-                <Heart className="h-5 w-5" />
-                <span>{pin.user.followers} likes</span>
+                <Heart className={`h-5 w-5 ${isLiked ? "fill-current text-primary" : ""}`} />
+                <span>{pin.likes} likes</span>
               </div>
               <div className="flex items-center gap-2">
                 <MessageCircle className="h-5 w-5" />
@@ -109,8 +161,35 @@ const PinDetail = () => {
           </div>
         </div>
       </div>
+
+      <Dialog open={isWardrobeDialogOpen} onOpenChange={setIsWardrobeDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add to Wardrobe</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="space-y-2">
+              {wardrobes.map(wardrobe => (
+                <Button
+                  key={wardrobe.id}
+                  variant="outline"
+                  className="w-full justify-start"
+                  onClick={() => handleAddToWardrobe(wardrobe.id)}
+                >
+                  <FolderPlus className="h-4 w-4 mr-2" />
+                  {wardrobe.name}
+                  <span className="ml-auto text-sm text-white/60">
+                    {wardrobe.pins.length} items
+                  </span>
+                </Button>
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
 
 export default PinDetail;
+
