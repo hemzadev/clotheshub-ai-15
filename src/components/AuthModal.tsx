@@ -160,7 +160,8 @@ const AuthModal = () => {
           let height = img.height;
           
           // Calculate new dimensions while maintaining aspect ratio
-          const maxDimension = 800;
+          // Reduced maximum dimension to 400px
+          const maxDimension = 400;
           if (width > height && width > maxDimension) {
             height = (height * maxDimension) / width;
             width = maxDimension;
@@ -178,11 +179,30 @@ const AuthModal = () => {
           if (ctx) {
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, width, height);
+            // Use ImageSmoothingQuality for better compression
+            ctx.imageSmoothingQuality = 'low';
             ctx.drawImage(img, 0, 0, width, height);
             
-            // Convert to compressed JPEG
-            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
-            setProfileImage(compressedDataUrl);
+            // Convert to compressed JPEG with lower quality
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.5);
+            
+            // If still too large, reduce dimensions further
+            if (compressedDataUrl.length > 250) {
+              const scaleFactor = 250 / compressedDataUrl.length;
+              const newWidth = width * Math.sqrt(scaleFactor);
+              const newHeight = height * Math.sqrt(scaleFactor);
+              
+              canvas.width = newWidth;
+              canvas.height = newHeight;
+              ctx.fillStyle = 'white';
+              ctx.fillRect(0, 0, newWidth, newHeight);
+              ctx.imageSmoothingQuality = 'low';
+              ctx.drawImage(img, 0, 0, newWidth, newHeight);
+              const finalDataUrl = canvas.toDataURL('image/jpeg', 0.4);
+              setProfileImage(finalDataUrl);
+            } else {
+              setProfileImage(compressedDataUrl);
+            }
           }
         };
         img.src = reader.result as string;
