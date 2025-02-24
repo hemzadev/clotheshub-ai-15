@@ -1,15 +1,15 @@
 
-import { Sidebar } from "@/components/ui/sidebar";
 import { Home as HomeIcon, PlusCircle, Grid, User, Settings, Sparkles } from "lucide-react";
 import PinGrid from "@/components/PinGrid";
 import HomeNavbar from "@/components/HomeNavbar";
 import { Link, useLocation } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { staticPins } from "@/data/staticData";
+import { useState } from "react";
 
 const Home = () => {
   const location = useLocation();
+  const [loading] = useState(false);
   
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -23,133 +23,9 @@ const Home = () => {
     { icon: User, path: "/account", label: "Account" },
   ];
 
-  const { data: allPins, isLoading: loadingAll, error: errorAll } = useQuery({
-    queryKey: ['pins'],
-    queryFn: async () => {
-      console.log('Fetching all pins...');
-      try {
-        const response = await axios.post('http://localhost:8088/graphql', {
-          query: `
-            query {
-              pins {
-                id
-                title
-                description
-                type
-                imageUrl
-                user {
-                  id
-                  username
-                  profilePicture
-                }
-              }
-            }
-          `
-        });
-        console.log('All pins raw response:', response);
-        
-        if (response.data.errors) {
-          throw new Error(response.data.errors[0].message);
-        }
-        
-        return response.data.data?.pins || [];
-      } catch (error) {
-        console.error('Error fetching all pins:', error);
-        throw error;
-      }
-    }
-  });
-
-  const { data: productPins, isLoading: loadingProducts, error: errorProducts } = useQuery({
-    queryKey: ['pins', 'products'],
-    queryFn: async () => {
-      console.log('Fetching product pins...');
-      try {
-        const response = await axios.post('http://localhost:8088/graphql', {
-          query: `
-            query {
-              pinsByType(type: "PRODUCT") {
-                id
-                title
-                description
-                type
-                imageUrl
-                user {
-                  id
-                  username
-                  profilePicture
-                }
-              }
-            }
-          `
-        });
-        console.log('Product pins raw response:', response);
-        
-        if (response.data.errors) {
-          throw new Error(response.data.errors[0].message);
-        }
-        
-        return response.data.data?.pinsByType || [];
-      } catch (error) {
-        console.error('Error fetching product pins:', error);
-        throw error;
-      }
-    }
-  });
-
-  const { data: outfitPins, isLoading: loadingOutfits, error: errorOutfits } = useQuery({
-    queryKey: ['pins', 'outfits'],
-    queryFn: async () => {
-      console.log('Fetching outfit pins...');
-      try {
-        const response = await axios.post('http://localhost:8088/graphql', {
-          query: `
-            query {
-              pinsByType(type: "OUTFIT") {
-                id
-                title
-                description
-                type
-                imageUrl
-                user {
-                  id
-                  username
-                  profilePicture
-                }
-              }
-            }
-          `
-        });
-        console.log('Outfit pins raw response:', response);
-        
-        if (response.data.errors) {
-          throw new Error(response.data.errors[0].message);
-        }
-        
-        return response.data.data?.pinsByType || [];
-      } catch (error) {
-        console.error('Error fetching outfit pins:', error);
-        throw error;
-      }
-    }
-  });
-
-  // Log the current state of all data
-  console.log('Current data state:', {
-    allPins,
-    productPins,
-    outfitPins,
-    loadingStates: {
-      all: loadingAll,
-      products: loadingProducts,
-      outfits: loadingOutfits
-    },
-    errors: {
-      all: errorAll,
-      products: errorProducts,
-      outfits: errorOutfits
-    }
-  });
+  const allPins = staticPins;
+  const productPins = staticPins.filter(pin => pin.type === "PRODUCT");
+  const outfitPins = staticPins.filter(pin => pin.type === "OUTFIT");
 
   return (
     <div className="min-h-screen bg-background">
@@ -189,13 +65,13 @@ const Home = () => {
               <TabsTrigger value="outfits">Outfits</TabsTrigger>
             </TabsList>
             <TabsContent value="all">
-              <PinGrid pins={allPins} loading={loadingAll} />
+              <PinGrid pins={allPins} loading={loading} />
             </TabsContent>
             <TabsContent value="products">
-              <PinGrid pins={productPins} loading={loadingProducts} />
+              <PinGrid pins={productPins} loading={loading} />
             </TabsContent>
             <TabsContent value="outfits">
-              <PinGrid pins={outfitPins} loading={loadingOutfits} />
+              <PinGrid pins={outfitPins} loading={loading} />
             </TabsContent>
           </Tabs>
         </main>
@@ -205,4 +81,3 @@ const Home = () => {
 };
 
 export default Home;
-
