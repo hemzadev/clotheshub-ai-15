@@ -1,42 +1,81 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
-import { ChevronDown, Mail } from "lucide-react";
+import { ChevronDown, Mail, UserRound, ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
-const formSchema = z.object({
+const credentialsSchema = z.object({
   email: z.string().email("Please enter a valid email"),
   password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+const profileSchema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  bio: z.string().max(160, "Bio must be less than 160 characters"),
+  profilePicture: z.string().optional(),
 });
 
 const AuthModal = () => {
   const [isEmailAuth, setIsEmailAuth] = useState(false);
   const [isSignUp, setIsSignUp] = useState(true);
+  const [signUpStep, setSignUpStep] = useState(1);
+  const [profileImage, setProfileImage] = useState<string>("");
   
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const credentialsForm = useForm<z.infer<typeof credentialsSchema>>({
+    resolver: zodResolver(credentialsSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const profileForm = useForm<z.infer<typeof profileSchema>>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      username: "",
+      bio: "",
+      profilePicture: "",
+    },
+  });
+
+  const onCredentialsSubmit = (values: z.infer<typeof credentialsSchema>) => {
     console.log(values);
+    setSignUpStep(2);
+  };
+
+  const onProfileSubmit = (values: z.infer<typeof profileSchema>) => {
+    console.log({ ...values, profilePicture: profileImage });
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfileImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
     <>
       <DialogHeader className="space-y-4">
         <DialogTitle className="text-2xl text-center font-medium">
-          {isEmailAuth ? (isSignUp ? "Create an account" : "Welcome back") : "Welcome to StylisH"}
+          {isEmailAuth ? (
+            isSignUp ? (
+              signUpStep === 1 ? "Create an account" : "Complete your profile"
+            ) : "Welcome back"
+          ) : "Welcome to StylisH"}
         </DialogTitle>
         {!isEmailAuth && (
           <p className="text-center text-muted-foreground">
@@ -87,39 +126,153 @@ const AuthModal = () => {
             </Button>
           </>
         ) : (
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input type="email" placeholder="Enter your email" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input type="password" placeholder="Enter your password" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" className="w-full bg-black text-white hover:bg-black/90">
-                {isSignUp ? "Sign Up" : "Sign In"}
-              </Button>
-            </form>
-          </Form>
+          <>
+            {isSignUp ? (
+              signUpStep === 1 ? (
+                <Form {...credentialsForm}>
+                  <form onSubmit={credentialsForm.handleSubmit(onCredentialsSubmit)} className="space-y-4">
+                    <FormField
+                      control={credentialsForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input type="email" placeholder="Enter your email" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={credentialsForm.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Password</FormLabel>
+                          <FormControl>
+                            <Input type="password" placeholder="Enter your password" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" className="w-full bg-black text-white hover:bg-black/90">
+                      Continue
+                    </Button>
+                  </form>
+                </Form>
+              ) : (
+                <Form {...profileForm}>
+                  <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-4">
+                    <div className="flex flex-col items-center gap-4 mb-6">
+                      <Avatar className="h-24 w-24 cursor-pointer relative group">
+                        {profileImage ? (
+                          <AvatarImage src={profileImage} className="object-cover" />
+                        ) : (
+                          <AvatarFallback>
+                            <UserRound className="h-12 w-12 text-muted-foreground" />
+                          </AvatarFallback>
+                        )}
+                        <div className="absolute inset-0 bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <ImageIcon className="h-8 w-8 text-white" />
+                        </div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          onChange={handleImageUpload}
+                        />
+                      </Avatar>
+                      <p className="text-sm text-muted-foreground">
+                        Click to upload profile picture
+                      </p>
+                    </div>
+                    <FormField
+                      control={profileForm.control}
+                      name="username"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Username</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Choose a username" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={profileForm.control}
+                      name="bio"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Bio</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="Tell us about yourself" 
+                              className="resize-none"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="flex gap-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => setSignUpStep(1)}
+                      >
+                        Back
+                      </Button>
+                      <Button 
+                        type="submit" 
+                        className="flex-1 bg-black text-white hover:bg-black/90"
+                      >
+                        Complete Sign Up
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              )
+            ) : (
+              <Form {...credentialsForm}>
+                <form onSubmit={credentialsForm.handleSubmit(onCredentialsSubmit)} className="space-y-4">
+                  <FormField
+                    control={credentialsForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input type="email" placeholder="Enter your email" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={credentialsForm.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input type="password" placeholder="Enter your password" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" className="w-full bg-black text-white hover:bg-black/90">
+                    Sign In
+                  </Button>
+                </form>
+              </Form>
+            )}
+          </>
         )}
         
         <p className="text-center text-sm text-muted-foreground mt-2">
@@ -127,7 +280,10 @@ const AuthModal = () => {
             <>
               {isSignUp ? "Already have an account? " : "Don't have an account? "}
               <button
-                onClick={() => setIsSignUp(!isSignUp)}
+                onClick={() => {
+                  setIsSignUp(!isSignUp);
+                  setSignUpStep(1);
+                }}
                 className="underline underline-offset-4 hover:text-black"
               >
                 {isSignUp ? "Sign in" : "Sign up"}
@@ -153,7 +309,10 @@ const AuthModal = () => {
           <Button
             variant="ghost"
             className="mt-2"
-            onClick={() => setIsEmailAuth(false)}
+            onClick={() => {
+              setIsEmailAuth(false);
+              setSignUpStep(1);
+            }}
           >
             <ChevronDown className="w-4 h-4 mr-2 rotate-90" />
             Back to all options
